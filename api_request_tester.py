@@ -21,9 +21,9 @@ _NUMERIC_ID = re.compile(r"^\d+$")
 # (Needed headers found thanks to https://github.com/ChickenNungets/IFSC-data-analysis)
 def fetch_data(path):
     headers = {
-        'X-Csrf-Token': 'QsiFWuxEY1S9h_-dQgRA_7S5w9uvvmXsjq56QbTPw4i_g_XR68rMCBFFhW6HngBRtHskfN5yjX8GQmawqs8BlQ',
+        'X-Csrf-Token': 'as3PvBDSeMFu_fMVW8Qtp6VDdrJrsHsaToMcOCCK-fkVlwUyCXfeDGXOpFrUv1IBnYdUZYgY-uSW-SoIrWN8bQ',
         'Referer': 'https://ifsc.results.info',
-        'Cookie': 'session_id=_verticallife_resultservice_session=6RHN3xZrXnftTiScNfSHg7BVvuebLzGAmC9P5vIpzdySn2vG7VwQpjSZRDHug%2BPKCWlkt831HjLvHsPoVKrzTGsPVR6mqSOtjHB%2Bwht%2Bj39KxYO%2FJlaU6zmh8VhNFEl9bXHiOlPGk8AxnZqiBSYKTxJFCqh34nqdurXfFDcsRnbEtYCixcOdx%2F32E4zYGLVw7DSXXIKOVTUivS43UJZq5zDWPctX95UWm%2FD7%2B6UYT2s0B%2B3XJVPgjMWCMR%2FVZs%2FQC45Gjm4uCpHHe8Yt73nM3J%2Br43V1HuHGSvRpRczrJ4QdovlJHDEpg4rjUA%3D%3D',
+        'Cookie': 'session_id=_verticallife_resultservice_session=fOdV4TuFGIzU315JSVh5TyUd2PeLcdwC9iy6lpNWDBtpjvUhnQCdDZgR90CO57VRc4OMyowGSrzA%2BczbyKPyCMIMa1yr5%2BojTEzGP2fQei8s6v4tNmyueStVlYL46gBo8HXYC%2Fx0yrvRSAuR2rWU4UPnqa%2FrG66wvDOmBBh86GzbWj2ZBfEnOCnxY1gI1PSKYu%2BW4SZ%2FKPR%2FOyL70oWRWCM3pytRBaRPn%2FKlEksHjM%2B2XlkzNRGQi7lFDDeElvUDTRj5aHR2cXkTl0JOFgRY%2B7LWq5vRH6WKwHCmO2%2BEDZxdtMhFqC7aruunhQ%3D%3D--rHK2FeAgP%2BAcKiNE--TvOXDr4r0Rxitjml2KEIFA%3D%3D',
     }
 
     url = API_BASE_URL + path
