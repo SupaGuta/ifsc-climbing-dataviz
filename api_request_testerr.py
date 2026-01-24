@@ -7,10 +7,10 @@ import json
 import re
 
 # Config
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "database" / "ifsc-data.sqlite"   
 API_BASE_URL =  "https://ifsc.results.info/api/v1"
-API_DATA_STRUCT_FOLDER = BASE_DIR / "assets" / "api-data-struct"
+API_DATA_STRUCT_FOLDER = BASE_DIR / "assets" / "api-data-structures"
 _NUMERIC_ID = re.compile(r"^\d+$")
 
 
@@ -31,6 +31,7 @@ def fetch_data(request_url):
             data_struct_filename = request_to_filename(request_url)
             with open(API_DATA_STRUCT_FOLDER / data_struct_filename, 'w', encoding='utf-8') as f:
                 json.dump(response.json(), f, ensure_ascii=False, indent=4)
+            print("Succesfully stored data struct to file:", data_struct_filename)
 
         else:
             print(response)
@@ -42,18 +43,19 @@ def fetch_data(request_url):
 
 # Transofrms all the request params into a json filename
 def request_to_filename(path):
-    # Cleans path var
     path = path.strip("/")
-    segments = [s for s in path.split("/") if s]
 
     parts = []
-    for seg in segments:
-        if _NUMERIC_ID.match(seg):
+    for part in path.split("/"):
+        if _NUMERIC_ID.match(part):
             parts.append("id")
         else:
-            parts.append(seg.lower())
+            parts.append(part.lower())
 
-    base = "-".join(parts) if parts else "root"
+    if len(parts) > 0:
+        base = "-".join(parts)
+    else:
+        base = "root"
 
     return base + ".json"
 
