@@ -1,2 +1,5 @@
 # MySQL Workbench backup files
 *.bak
+
+# Error log files
+*.log
