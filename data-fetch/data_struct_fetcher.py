@@ -63,7 +63,8 @@ CREATE TABLE IF NOT EXISTS Events (
 CREATE TABLE IF NOT EXISTS Results (
     id INTEGER PRIMARY KEY,
     ifsc_id INTEGER,
-    event_id INTEGER
+    event_id INTEGER,
+    UNIQUE (ifsc_id, event_id)
 );
                      
 CREATE TABLE IF NOT EXISTS Athletes (
