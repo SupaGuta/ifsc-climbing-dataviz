@@ -23,7 +23,7 @@ HEADERS = {
     'Cookie': 'session_id=_verticallife_resultservice_session=fOdV4TuFGIzU315JSVh5TyUd2PeLcdwC9iy6lpNWDBtpjvUhnQCdDZgR90CO57VRc4OMyowGSrzA%2BczbyKPyCMIMa1yr5%2BojTEzGP2fQei8s6v4tNmyueStVlYL46gBo8HXYC%2Fx0yrvRSAuR2rWU4UPnqa%2FrG66wvDOmBBh86GzbWj2ZBfEnOCnxY1gI1PSKYu%2BW4SZ%2FKPR%2FOyL70oWRWCM3pytRBaRPn%2FKlEksHjM%2B2XlkzNRGQi7lFDDeElvUDTRj5aHR2cXkTl0JOFgRY%2B7LWq5vRH6WKwHCmO2%2BEDZxdtMhFqC7aruunhQ%3D%3D--rHK2FeAgP%2BAcKiNE--TvOXDr4r0Rxitjml2KEIFA%3D%3D',
 }
 # Seasons range IDs (checked manually)
-START_ID = 0
+START_ID = 2
 END_ID = 37 # 2025
 
 
@@ -190,7 +190,7 @@ try:
     for data in data_list:
         # Seasons
         ifsc_id = data.get("ifsc_id", None)    
-        db_cur.execute('''INSERT OR IGNORE INTO Seasons (ifsc_id) VALUES ( ? )''', ( ifsc_id, )) 
+        db_cur.execute("INSERT OR IGNORE INTO Seasons (ifsc_id) VALUES ( ? )", ( ifsc_id, )) 
         row = db_cur.execute('SELECT id FROM Seasons WHERE ifsc_id = ? ', (ifsc_id, ))
         season_id = db_cur.fetchone()[0]
         seasons_count = seasons_count + 1
@@ -199,8 +199,8 @@ try:
         season_leagues = data.get("leagues", None)
         for season_league in season_leagues:
             season_league_ifsc_id = int(season_league.get("url", None).strip('/').split('/')[3])
-            db_cur.execute('''INSERT OR IGNORE INTO Season_Leagues (ifsc_id, season_id) VALUES ( ?, ? )''', (season_league_ifsc_id, season_id))
-            db_cur.execute('SELECT id FROM Season_Leagues WHERE ifsc_id = ? ', (season_league_ifsc_id, ))  
+            db_cur.execute("INSERT OR IGNORE INTO Season_Leagues (ifsc_id, season_id) VALUES ( ?, ? )", (season_league_ifsc_id, season_id))
+            db_cur.execute("SELECT id FROM Season_Leagues WHERE ifsc_id = ?", (season_league_ifsc_id, ))  
             season_league_id = db_cur.fetchone()[0]
             season_leagues_count = season_leagues_count + 1
 
@@ -208,7 +208,7 @@ try:
         events = data.get("events", None) 
         for event in events:
             event_ifsc_id = event.get("event_id", None)
-            db_cur.execute('''INSERT OR IGNORE INTO Events (ifsc_id, season_league_id) VALUES ( ?, ? )''', (event_ifsc_id, season_league_id))
+            db_cur.execute("INSERT OR IGNORE INTO Events (ifsc_id, season_league_id) VALUES ( ?, ? )", (event_ifsc_id, season_league_id))
             events_count = events_count + 1
         
         # Commit all season info to database
@@ -234,7 +234,7 @@ results_count = 0
 try:
     for data in data_list:    
         ifsc_id = data.get("ifsc_id", None) 
-        db_cur.execute("""SELECT id FROM Events WHERE ifsc_id = ? """, (ifsc_id, ))
+        db_cur.execute("SELECT id FROM Events WHERE ifsc_id = ?", (ifsc_id, ))
         row = db_cur.fetchone()
         if row:
             event_id = row[0]
@@ -246,7 +246,7 @@ try:
         d_cats = data.get("d_cats", None)
         for d_cat in d_cats:
             result_ifsc_id = d_cat.get("dcat_id", None)
-            db_cur.execute('''INSERT OR IGNORE INTO Results (ifsc_id, event_id) VALUES ( ?, ? )''', (result_ifsc_id, event_id))
+            db_cur.execute("INSERT OR IGNORE INTO Results (ifsc_id, event_id) VALUES ( ?, ? )", (result_ifsc_id, event_id))
             results_count = results_count + 1
         
         # Commit all season info to database
@@ -268,7 +268,7 @@ events_count = 0
 results_count = 0
 athletes_count = 0
 
-events = db_cur.execute("""SELECT id, ifsc_id FROM Events ORDER BY id ASC""").fetchall()
+events = db_cur.execute("SELECT id, ifsc_id FROM Events ORDER BY id ASC").fetchall()
 for event_id, event_ifsc_id in events:
     print("Started scraping results for event", event_ifsc_id, "...")
     results_ifsc_ids = [int(row[0]) for row in db_cur.execute("SELECT ifsc_id FROM Results WHERE event_id = ?", (event_id, ))]
@@ -289,7 +289,7 @@ for event_id, event_ifsc_id in events:
 
             for ranking in rankings:
                 athlete_ifsc_id = ranking.get("athlete_id", None)
-                db_cur.execute('''INSERT OR IGNORE INTO Athletes (ifsc_id) VALUES ( ? )''', (athlete_ifsc_id, ))
+                db_cur.execute("INSERT OR IGNORE INTO Athletes (ifsc_id) VALUES ( ? )", (athlete_ifsc_id, ))
                 if db_cur.rowcount == 1:
                     athletes_count = athletes_count + 1
             
