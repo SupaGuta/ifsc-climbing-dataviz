@@ -55,12 +55,14 @@ CREATE TABLE IF NOT EXISTS Season_Leagues (
 ''')
 
 
-# Retrieve valid seasons' ifsc_ids from struct database
-seasons_ifsc_ids = [int(row[0]) for row in db_struct_cur.execute("SELECT ifsc_id FROM Seasons")]
-
 # Gather data from seasons endpoint
 # API : /seasons/id
 # Fill tables: Seasons, Leagues, Season_Leagues
+
+# Retrieve valid seasons' ifsc_ids from struct database
+seasons_ifsc_ids = [int(row[0]) for row in db_struct_cur.execute("SELECT ifsc_id FROM Seasons")]
+
+# Start scraping data from API
 print("Started scraping seasons...")
 data_list, failed_ids = data_fetcher.scrape_parallel("seasons", seasons_ifsc_ids)
 
@@ -90,7 +92,7 @@ try:
 
             row = db_content_cur.execute('SELECT id FROM leagues WHERE name = ? ', (league_name, ))
             league_id = db_content_cur.fetchone()[0]
-            
+
             # Season_Leagues
             season_league_ifsc_id = int(season_league.get("url", None).strip('/').split('/')[3])
             db_content_cur.execute("INSERT OR IGNORE INTO Season_Leagues (season_id, league_id, ifsc_id) VALUES ( ?, ?, ? )", (season_id, league_id, season_league_ifsc_id))
