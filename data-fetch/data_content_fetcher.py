@@ -69,21 +69,23 @@ if DATA_TO_FETCH["seasons"]:
     # Parse data and save to database
     seasons_count = 0
     leagues_count = 0
-
-    try:
-        for data in data_list:
-            # Seasons
+    errors_count = 0
+    
+    for data in data_list:
+        try:
+            # Get current season_league id from IFSC 
             season_ifsc_id = data.get("ifsc_id", None)
+
+            # Parse seasons data
             season_year = data.get("name", None) 
             db_content_cur.execute("INSERT OR IGNORE INTO Seasons (year, ifsc_id) VALUES ( ?, ? )", (season_year, season_ifsc_id)) 
             row = db_content_cur.execute('SELECT id FROM Seasons WHERE ifsc_id = ? ', (season_ifsc_id, ))
             season_id = db_content_cur.fetchone()[0]
             seasons_count = seasons_count + 1
 
-            # Leagues
+            # Parse leagues data
             leagues = data.get("leagues", None)
             for league in leagues:
-                # Leagues
                 league_name = league.get("name", None)
                 db_content_cur.execute("INSERT OR IGNORE INTO Leagues (name) VALUES ( ? )", (league_name, )) 
                 if db_content_cur.rowcount == 1:  
@@ -92,11 +94,13 @@ if DATA_TO_FETCH["seasons"]:
             # Commit all info to database
             db_content_conn.commit()
 
-        # Output
-        print(f"Scraped {seasons_count} seasons and {leagues_count} leagues.")
+        except Exception as e:
+            logging.error(f"Error parsing data from '/seasons/{season_ifsc_id}': {e}")
+            errors_count = errors_count + 1
+            continue
 
-    except Exception as e:
-        logging.error(f"Error parsing data from '/seasons/{season_ifsc_id}': {e}")
+    # Output
+    print(f"Scraped {seasons_count} seasons and {leagues_count} leagues ({errors_count} errors).")
 
 
 # Gather data from season_leagues endpoint
@@ -141,9 +145,11 @@ if DATA_TO_FETCH["season_leagues"]:
     disciplines_count = 0
     categories_count = 0
     events_count = 0
+    errors_count = 0
 
-    try:
-        for data in data_list:
+    for data in data_list:
+        try:
+            # Get current season_league id from IFSC       
             season_leagues_ifsc_id = data.get("ifsc_id", None)
 
             # Parse disciplines and categories (name and gender)
@@ -152,12 +158,15 @@ if DATA_TO_FETCH["season_leagues"]:
                 d_cat_name = d_cat.get("name", None)
 
                 # Discipline and category name
-                parts = d_cat_name.lower().strip().split(maxsplit=1)
+                parts = d_cat_name.strip().split(maxsplit=1)
                 discipline_name = parts[0]
+                if discipline_name == "BOULDER&LEAD":
+                    discipline_name = re.sub(r"\s*&\s*", " & ", discipline_name)
+                discipline_name = discipline_name.capitalize()
                 category_name = parts[1] or ""
 
                 # Gender (int)
-                gender_match = re.search("\b(?P<g>men|male|women|female)\b", category_name)
+                gender_match = re.search("\b(?P<g>men|male|women|female)\b", category_name, re.IGNORECASE)
                 category_gender = None
                 if gender_match:
                     gender_str = gender_match.group("g").lower()
@@ -195,11 +204,13 @@ if DATA_TO_FETCH["season_leagues"]:
             # Commit all info to database
             db_content_conn.commit()
 
-        # Output
-        print(f"Scraped {disciplines_count} disciplmines, {categories_count} categories and {events_count} events.")
+        except Exception as e:
+            logging.error(f"Error parsing data from '/season_leagues/{season_leagues_ifsc_id}': {e}")
+            errors_count = errors_count + 1
+            continue
 
-    except Exception as e:
-        logging.error(f"Error parsing data from '/season_leagues/{season_leagues_ifsc_id}': {e}")
+    # Output
+    print(f"Scraped {disciplines_count} disciplmines, {categories_count} categories and {events_count} events ({errors_count} errors).")
 
 
 # Close database handles
