@@ -18,7 +18,7 @@ LOG_FILE = BASE_DIR / "assets" / "logs" / "data_content_fether_errors.log"
 DB_STRUCT = BASE_DIR / "assets" / "databases" / "ifsc-data-struct.sqlite"  
 DB_CONTENT = BASE_DIR / "assets" / "databases" / "ifsc-data-content.sqlite"
 DATA_TO_FETCH = {
-    "seasons" : True,
+    "seasons" : False,
     "season_leagues" : True,
     "events" : True,
     "results" : True,
@@ -162,7 +162,7 @@ if DATA_TO_FETCH["season_leagues"]:
                 discipline_name = parts[0]
                 if discipline_name == "BOULDER&LEAD":
                     discipline_name = re.sub(r"\s*&\s*", " & ", discipline_name)
-                discipline_name = discipline_name.capitalize()
+                discipline_name = discipline_name.title()
                 category_name = parts[1] or ""
 
                 # Gender (int)
