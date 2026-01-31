@@ -40,9 +40,47 @@ def _country_name_to_alpha3(name: str) -> Optional[str]:
     if not pycountry:
         # minimal fallback for common cases seen in the dataset
         fallback = {
+            "australia": "AUS",
+            "austria": "AUT",
+            "belgium": "BEL",
+            "brazil": "BRA",
+            "canada": "CAN",
+            "china": "CHN",
+            "czech republic": "CZE",
+            "czechia": "CZE",
+            "england": "GBR",
             "france": "FRA",
+            "germany": "DEU",
+            "great britain": "GBR",
+            "hong kong": "HKG",
+            "india": "IND",
             "indonesia": "IDN",
+            "israel": "ISR",
+            "italy": "ITA",
+            "japan": "JPN",
+            "mexico": "MEX",
+            "morocco": "MAR",
+            "netherlands": "NLD",
             "new caledonia": "NCL",
+            "new zealand": "NZL",
+            "peru": "PER",
+            "portugal": "PRT",
+            "qatar": "QAT",
+            "republic of korea": "KOR",
+            "russia": "RUS",
+            "scotland": "GBR",
+            "slovenia": "SVN",
+            "south africa": "ZAF",
+            "spain": "ESP",
+            "switzerland": "CHE",
+            "tunisia": "TUN",
+            "uae": "ARE",
+            "united arab emirates": "ARE",
+            "united kingdom": "GBR",
+            "united states": "USA",
+            "united states of america": "USA",
+            "usa": "USA",
+            "wales": "GBR",
         }
         return fallback.get(name.strip().lower())
 
@@ -191,6 +229,7 @@ def _cleanup_city(city_chunk: str) -> str:
     c = re.sub(r"\bat\s+sea\b", "", c, flags=re.I)
     c = re.sub(r"^\s*speed\s+rock\s+", "", c, flags=re.I)
     c = re.sub(r"^\s*boulder\s+masters?\s+", "", c, flags=re.I)
+    c = re.sub(r"\s+x-?games?\s*$", "", c, flags=re.I)
 
     # remove ordinals like "10th"
     c = re.sub(r"\b\d+(?:st|nd|rd|th)\b", "", c, flags=re.I)
@@ -296,6 +335,75 @@ def _suffix_city_from_left(left: str) -> str:
     return " ".join(reversed(suffix)).strip()
 
 
+# ---- City/Country split from location chunks ---------------------------------
+
+def _split_city_and_country(chunk: str) -> Tuple[str, Optional[str]]:
+    """
+    Split a location chunk into (city, country_alpha3) when the country is explicit.
+    Returns the (possibly empty) city string and the country code (or None).
+    """
+    if not chunk:
+        return "", None
+
+    raw = _normalize_spaces(chunk).strip().strip(",")
+    if not raw:
+        return "", None
+
+    # comma-separated "City, Country" or "City, USA"
+    if "," in raw:
+        parts = [p.strip() for p in raw.split(",") if p.strip()]
+        if len(parts) >= 2:
+            country_candidate = parts[-1]
+            alpha3 = _country_name_to_alpha3(country_candidate)
+            if not alpha3 and re.fullmatch(r"[A-Z]{3}", country_candidate):
+                alpha3 = country_candidate
+            if alpha3:
+                city_part = ", ".join(parts[:-1]).strip()
+                return city_part, alpha3
+
+    # trailing country code "City USA"
+    m = re.search(r"\b(?P<country>[A-Z]{3})\b$", raw)
+    if m:
+        country = m.group("country")
+        city_part = raw[: m.start()].strip(" ,;-")
+        return city_part, country
+
+    # full chunk equals a country name
+    alpha3 = _country_name_to_alpha3(raw)
+    if alpha3:
+        return "", alpha3
+
+    # try trailing country name without comma: "Hong Kong China"
+    toks = raw.split()
+    for i in range(1, min(4, len(toks)) + 1):
+        candidate = " ".join(toks[-i:])
+        alpha3 = _country_name_to_alpha3(candidate)
+        if alpha3:
+            city_part = " ".join(toks[:-i]).strip()
+            return city_part, alpha3
+
+    return raw, None
+
+
+def _city_chunk_from_left(left: str) -> str:
+    seps = list(SEP_RE.finditer(left))
+    if not seps:
+        return _suffix_city_from_left(left)
+
+    for i in range(len(seps) - 1, -1, -1):
+        chunk = left[seps[i].end():].strip()
+        if not chunk:
+            continue
+        city_part, country_part = _split_city_and_country(chunk)
+        sep_text = seps[i].group(0)
+        if city_part or not country_part or not sep_text.startswith(","):
+            return chunk
+        if i == 0:
+            return left
+
+    return ""
+
+
 # ---- Public API ---------------------------------------------------------------
 
 def parse_city_country(name: str) -> Tuple[Optional[str], Optional[str]]:
@@ -313,18 +421,9 @@ def parse_city_country(name: str) -> Tuple[Optional[str], Optional[str]]:
     # Anchor on country when present
     if country and c_start is not None:
         left = s[:c_start].rstrip().rstrip(" ,-")
-
-        # find last separator
-        m_sep = None
-        for m_sep in SEP_RE.finditer(left):
-            pass
-
-        if m_sep and m_sep.end() < len(left):
-            city_chunk = left[m_sep.end():].strip()
-        else:
-            city_chunk = _suffix_city_from_left(left)
-
-        city = _cleanup_city(city_chunk) if city_chunk else ""
+        city_chunk = _city_chunk_from_left(left)
+        city_raw, _ = _split_city_and_country(city_chunk)
+        city = _cleanup_city(city_raw) if city_raw else ""
         return (city or None), country
 
     # Otherwise anchor on the last year
@@ -334,17 +433,14 @@ def parse_city_country(name: str) -> Tuple[Optional[str], Optional[str]]:
 
     if m_year:
         left = s[:m_year.start()].rstrip().rstrip(" ,-")
+        city_chunk = _city_chunk_from_left(left)
+        if not city_chunk:
+            _, country_from_chunk = _split_city_and_country(left)
+            if country_from_chunk:
+                return None, country_from_chunk
 
-        m_sep = None
-        for m_sep in SEP_RE.finditer(left):
-            pass
-
-        if m_sep and m_sep.end() < len(left):
-            city_chunk = left[m_sep.end():].strip()
-        else:
-            city_chunk = _suffix_city_from_left(left)
-
-        city = _cleanup_city(city_chunk) if city_chunk else ""
-        return (city or None), None
+        city_raw, country_from_chunk = _split_city_and_country(city_chunk)
+        city = _cleanup_city(city_raw) if city_raw else ""
+        return (city or None), country_from_chunk
 
     return None, None
