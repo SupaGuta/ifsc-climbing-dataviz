@@ -2,15 +2,17 @@
 # Everything is stored in a simple SQLite database for futher reference
 # Once done, we'll use it to gather all the associated content
 
-# Imported modules
+# Import modules
 from pathlib import Path
 import sys
 import sqlite3
 import logging
 import re
+# Import helpers
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 from assets.helpers import data_fetcher
+from assets.helpers import event_location_v2
 
 
 # General config
@@ -18,8 +20,8 @@ LOG_FILE = BASE_DIR / "assets" / "logs" / "data_content_fether_errors.log"
 DB_STRUCT = BASE_DIR / "assets" / "databases" / "ifsc-data-struct.sqlite"  
 DB_CONTENT = BASE_DIR / "assets" / "databases" / "ifsc-data-content.sqlite"
 DATA_TO_FETCH = {
-    "seasons" : True,
-    "season_leagues" : True,
+    "seasons" : False,
+    "season_leagues" : False,
     "events" : True,
     "results" : True,
     "athletes" : True 
@@ -43,7 +45,7 @@ db_content_cur = db_content_conn.cursor()
 
 if DATA_TO_FETCH["seasons"]:
 
-    # Drop existing tables and create again
+    # Drop and create new tables
     db_content_cur.executescript('''
     DROP TABLE IF EXISTS Seasons;
     DROP TABLE IF EXISTS Leagues;
@@ -109,7 +111,7 @@ if DATA_TO_FETCH["seasons"]:
 
 if DATA_TO_FETCH["season_leagues"]:
 
-    # Drop existing tables and create again
+    # Drop and create new tables
     db_content_cur.executescript('''
     DROP TABLE IF EXISTS Disciplines;
     DROP TABLE IF EXISTS Categories;
@@ -130,7 +132,13 @@ if DATA_TO_FETCH["season_leagues"]:
         id INTEGER PRIMARY KEY,
         season_id INTEGER,
         league_id INTEGER,
-        ifsc_id INTEGER UNIQUE
+        ifsc_id INTEGER UNIQUE,
+        name TEXT,
+        city TEXT,
+        country TEXT,
+        date_start DATE,
+        date_end DATE,
+        is_paraclimbing BOOLEAN
     );
     ''')
 
@@ -163,7 +171,7 @@ if DATA_TO_FETCH["season_leagues"]:
                 category_name = parts[1] or ""
 
                 # Gender (int)
-                gender_match = re.search("\b(?P<g>men|male|women|female)\b", category_name, re.IGNORECASE)
+                gender_match = re.search(r"\b(?P<g>men|male|women|female)\b", category_name, re.IGNORECASE)
                 category_gender = None
                 if gender_match:
                     gender_str = gender_match.group("g").lower()
@@ -208,6 +216,108 @@ if DATA_TO_FETCH["season_leagues"]:
 
     # Output
     print(f"Scraped {disciplines_count} disciplmines, {categories_count} categories and {events_count} events ({errors_count} errors).")
+
+
+# Gather data from events endpoint
+# API : /events/id
+# Fill tables: Events, Competitions
+
+if DATA_TO_FETCH["events"]:
+
+    # Drop and create new tables
+    db_content_cur.executescript('''
+    DROP TABLE IF EXISTS Competitions;
+                        
+    CREATE TABLE IF NOT EXISTS Competitions (
+        id INTEGER PRIMARY KEY,
+        event_id INTEGER,
+        discipline_id INTEGER,
+        category_id INTEGER,
+        ifsc_id INTEGER,
+        UNIQUE (event_id, discipline_id, category_id)
+    );
+    ''')
+            
+    db_content_cur.execute('''UPDATE Events 
+                            SET city=?, country=?''', (None, None))
+    
+    # Start scraping data from API
+    print("Started scraping events...")
+    # Retrieve valid events' ifsc_ids from struct database then start scraping
+    events_ifsc_ids = [int(row[0]) for row in db_struct_cur.execute("SELECT ifsc_id FROM Events")]
+    data_list, failed_ids = data_fetcher.scrape_parallel("events", events_ifsc_ids)
+
+    # Parse data and save to database
+    events_count = 0
+    competitions_count = 0
+    errors_count = 0
+    
+    for data in data_list:
+        try:
+            # Get current event id from IFSC 
+            event_ifsc_id = data.get("ifsc_id", None)
+
+            # Get current event in content table
+            row = db_content_cur.execute('SELECT id FROM Events WHERE ifsc_id = ? ', (event_ifsc_id, ))
+            event_id = db_content_cur.fetchone()[0]
+
+            # Parse event data
+            event_name = data.get("name", None)
+            event_city, event_country = event_location_v2.parse_city_country(event_name)
+            '''
+            if not event_city:
+                event_city = data.get("location", None)
+                if event_city:
+                    event_city = event_city.strip().split(",")[0]
+            if not event_country:
+                event_country = data.get("country", None)
+            '''
+            event_date_start = data.get("local_start_date", None)
+            event_date_end = data.get("local_end_date", None)
+            event_is_paraclimbing = data.get("is_paraclimbing_event", None)
+            
+            # Update current event data
+            db_content_cur.execute('''UPDATE Events 
+                                   SET name=?, city=?, country=?, date_start=?, date_end=?, is_paraclimbing=? 
+                                   WHERE id=?''', 
+                                   (event_name, event_city, event_country, event_date_start, event_date_end, 
+                                    event_is_paraclimbing, event_id))
+            events_count = events_count + 1
+            
+            # Parse competitions data
+            competitions = data.get("d_cats", None)
+            for comp in competitions:
+                discipline_name = comp.get("discipline_kind", None)       
+                row = db_content_cur.execute('SELECT id FROM Disciplines WHERE name = ? ', (discipline_name, ))
+                discipline_id = db_content_cur.fetchone()[0]
+                
+                category_name = comp.get("category_name", None)
+                # Hack for IFSC cat error in event 1462
+                if category_name == "AL1":
+                    category_name = "Men AL1"   
+                row = db_content_cur.execute('SELECT id FROM Categories WHERE name = ? ', (category_name, ))
+                category_id = db_content_cur.fetchone()[0]
+
+                comp_ifsc_id = comp.get("dcat_id", None)
+
+                db_content_cur.execute('''INSERT OR IGNORE INTO Competitions 
+                                       (event_id, discipline_id, category_id, ifsc_id) 
+                                       VALUES ( ?, ?, ?, ?)''', 
+                                       (event_id, discipline_id, category_id, comp_ifsc_id)) 
+                if db_content_cur.rowcount == 1:  
+                    competitions_count = competitions_count + 1 
+            
+            # Commit all info to database
+            db_content_conn.commit()
+
+        except Exception as e:
+            logging.error(f"Error parsing data from '/events/{event_ifsc_id}': {e}")
+            errors_count = errors_count + 1
+            continue
+
+
+    # Output
+    print(f"Scraped {events_count} events and {competitions_count} competitions ({errors_count} errors).")
 
 
 # Close database handles
