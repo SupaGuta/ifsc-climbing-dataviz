@@ -1,17 +1,23 @@
-'''
-Extract (city, country) from IFSC event "name" strings.
+"""
+Extract city and country (ISO-3166 alpha-3) from IFSC event names.
 
-Design goals:
-- Conservative: do NOT guess. If city/country can't be confidently parsed from the string, return None.
-- More robust than the original version:
-  - supports separators like "(B)- Munich" or "Cup- Kitzbuhel"
-  - supports malformed country codes like "CHN)" (missing "(")
-  - supports country names in parentheses like "(France)" or "(New Caledonia)"
-  - avoids removing legitimate cities such as "Boulder"
-'''
+Design goals
+- Be conservative: if city/country can't be extracted from the name, return None.
+- Prefer explicit signals only:
+    * country as "(FRA)" or " CHN)" (broken parenthesis) -> ISO3
+    * country name in parentheses "(France)" -> mapped to ISO3 (safe mapping)
+    * country token before a year "..., USA 1997" -> ISO3
+- Avoid "guessing": we strip common event keywords and reject known non-locations.
+
+Usage (CLI)
+    python event_location_improved.py --input Events.csv --output Events_improved.csv
+
+The output CSV will contain the same columns as input, but with improved 'city' and 'country'.
+"""
 
 from __future__ import annotations
 
+import argparse
 import re
 from typing import Optional, Tuple
 
@@ -21,426 +27,534 @@ except Exception:  # pragma: no cover
     pycountry = None
 
 
-def _normalize_spaces(s: str) -> str:
-    return " ".join(str(s).split())
+# --- Regex building blocks -------------------------------------------------
 
-
-# ---- Anchors (country / year) -------------------------------------------------
-
-COUNTRY_PAREN_RE = re.compile(r"\(\s*(?P<country>[A-Z]{3})\s*\)")
-# e.g. "... Chengdu CHN)"  (missing "(")
-COUNTRY_RPAREN_RE = re.compile(r"(?<!\()(?P<country>[A-Z]{3})\s*\)")
-
+COUNTRY_ISO3_PAREN_RE = re.compile(r"\(\s*([A-Z]{3})\s*\)")
+COUNTRY_ISO3_RPAREN_RE = re.compile(r"\b([A-Z]{3})\s*\)")  # e.g. " CHN)"
 YEAR_RE = re.compile(r"\b(?:19|20)\d{2}\b")
-PAREN_RE = re.compile(r"\(([^()]*)\)")
+
+# Country names inside parentheses: "(France)", "(New Caledonia)", ...
+PAREN_CONTENT_RE = re.compile(r"\(\s*([A-Za-z][A-Za-z \-\'’\.]{2,})\s*\)")
+
+# Discipline blocks like "(L)", "(B)", "(L,S)", "(L - S)", ...
+DISCIPLINE_BLOCK_RE = re.compile(
+    r"\(\s*[LSB](?:\s*(?:,|/)\s*[LSB]|\s*-\s*[LSB])*\s*\)",
+    re.IGNORECASE,
+)
+DISCIPLINE_PAREN_RE = re.compile(r"\(\s*(?:L|S|B)\s*\)", re.IGNORECASE)
+
+# Separators for splitting a "location segment" (avoid hyphens inside city names)
+SEP_RE = re.compile(r"(?:,\s*|\s-\s*|-\s+)")
+
+# Region/state abbreviations sometimes appear after a comma before the country anchor,
+# e.g. "Port Maquarie, NSW (AUS)". If we extract only the tail chunk we may get "NSW".
+# We only treat these as non-city tokens when they are in a known, small allowlist.
+REGION_ABBREV = {
+    # Australia
+    "NSW", "QLD", "VIC", "TAS", "SA", "WA", "NT", "ACT",
+}
+
+VENUE_CHUNKS = {
+    # Known venue tokens that are NOT cities in this dataset
+    "century plaza",
+}
+
+US_STATE_NAMES = {"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"}
 
 
-def _country_name_to_alpha3(name: str) -> Optional[str]:
-    """Map a country name found in the string to ISO alpha-3 (e.g. France -> FRA)."""
-    if not pycountry:
-        # minimal fallback for common cases seen in the dataset
-        fallback = {
-            "australia": "AUS",
-            "austria": "AUT",
-            "belgium": "BEL",
-            "brazil": "BRA",
-            "canada": "CAN",
-            "china": "CHN",
-            "czech republic": "CZE",
-            "czechia": "CZE",
-            "england": "GBR",
-            "france": "FRA",
-            "germany": "DEU",
-            "great britain": "GBR",
-            "hong kong": "HKG",
-            "india": "IND",
-            "indonesia": "IDN",
-            "israel": "ISR",
-            "italy": "ITA",
-            "japan": "JPN",
-            "mexico": "MEX",
-            "morocco": "MAR",
-            "netherlands": "NLD",
-            "new caledonia": "NCL",
-            "new zealand": "NZL",
-            "peru": "PER",
-            "portugal": "PRT",
-            "qatar": "QAT",
-            "republic of korea": "KOR",
-            "russia": "RUS",
-            "scotland": "GBR",
-            "slovenia": "SVN",
-            "south africa": "ZAF",
-            "spain": "ESP",
-            "switzerland": "CHE",
-            "tunisia": "TUN",
-            "uae": "ARE",
-            "united arab emirates": "ARE",
-            "united kingdom": "GBR",
-            "united states": "USA",
-            "united states of america": "USA",
-            "usa": "USA",
-            "wales": "GBR",
-        }
-        return fallback.get(name.strip().lower())
+# Event keywords (used to cut "World Cup ... <City>" => "<City>")
+EVENT_KEYWORDS = [
+    "world championship", "world championships",
+    "continental championship", "continental championships",
+    "world cup", "worldcup",
+    "championship", "championships",
+    "cup", "series", "open", "masters", "festival",
+    "grand prix", "grand-prix",
+    "youth", "junior", "senior",
+    "european", "asian", "panamerican", "african", "oceania",
+    "qualifier", "qualification", "qualifications",
+    "bouldering", "climbing",
+    "days",
+    "rock master", "rockmaster",
+    "trophy",
+    "competition", "competitions",
+    "rockstars", "rockstar",
+    "games",
+]
+EVENT_KEYWORD_RE = re.compile(
+    r"\b(" + "|".join([re.escape(k) for k in sorted(EVENT_KEYWORDS, key=len, reverse=True)]) + r")\b",
+    re.IGNORECASE,
+)
 
+# Keywords at end of a string: "… Darvas Cup" => "Darvas"
+END_KEYWORDS = [
+    "cup", "championship", "championships", "series", "open", "masters", "trophy", "festival", "games",
+    "rock master", "rockmaster",
+    "competition", "competitions", "climbing", "world", "worldcup", "world cup",
+]
+END_KEYWORD_RE = re.compile(
+    r"\b(" + "|".join([re.escape(k) for k in sorted(END_KEYWORDS, key=len, reverse=True)]) + r")\b\s*$",
+    re.IGNORECASE,
+)
+
+STOPWORDS = {"of", "de", "del", "di", "da", "la", "le", "du", "des", "the", "a", "an"}
+KEYWORDS_WORDS = set()
+for kw in EVENT_KEYWORDS + ["ifsc", "uiaa", "x-games", "x", "games", "espn", "intl", "int"]:
+    for w in re.split(r"\s+|-", kw.lower()):
+        if w:
+            KEYWORDS_WORDS.add(w)
+
+# Reject if these appear anywhere in the extracted city string
+BLACKLIST_CITY_SUBSTR = ["melloblocco", "the north face", "north face"]
+
+
+# --- Country helpers ------------------------------------------------------
+
+def _pycountry_lookup_safe(token: str) -> Optional[str]:
+    if pycountry is None:
+        return None
     try:
-        c = pycountry.countries.lookup(name.strip())
-        return getattr(c, "alpha_3", None)
+        c = pycountry.countries.lookup(token)
+        return c.alpha_3
     except Exception:
         return None
 
 
-def _extract_country(s: str) -> Tuple[Optional[str], Optional[int], Optional[int]]:
+def country_name_to_iso3_safe(name: str) -> Optional[str]:
+    """Conservative mapping for country names -> ISO3."""
+    s = name.strip().strip(".").replace("’", "'")
+    if len(s) <= 2:
+        return None
+
+    if s.upper() in ("UK", "U.K."):
+        s = "United Kingdom"
+    if s.upper() == "UAE":
+        s = "United Arab Emirates"
+    if s.upper() == "USA":
+        return "USA"
+
+    # Strict-ish lookup first
+    iso3 = _pycountry_lookup_safe(s)
+    if iso3:
+        return iso3
+
+    # Allow fuzzy only for longer / more country-ish strings to avoid false positives (Paris -> France, etc.)
+    if pycountry is None:
+        return None
+    lower = s.lower()
+    strong = any(k in lower for k in [
+        "republic", "kingdom", "united", "federation", "democratic", "people",
+        "state", "states", "emirates", "caledonia", "islands",
+    ])
+    if strong or len(s) >= 12:
+        try:
+            c = pycountry.countries.search_fuzzy(s)[0]
+            return c.alpha_3
+        except Exception:
+            return None
+    return None
+
+
+def looks_like_country_token(token: str) -> Optional[str]:
+    """Return ISO3 if 'token' is clearly a country code/name; else None."""
+    t = token.strip().strip(",;")
+    if not t:
+        return None
+
+    if re.fullmatch(r"[A-Z]{3}", t):
+        if pycountry is not None and pycountry.countries.get(alpha_3=t) is not None:
+            return t
+        return None
+
+    return country_name_to_iso3_safe(t)
+
+
+# --- City helpers ---------------------------------------------------------
+
+def tidy_case(s: str) -> str:
+    """If the string is mostly uppercase, return a nicer Title Case."""
+    letters = [ch for ch in s if ch.isalpha()]
+    if letters and sum(1 for ch in letters if ch.isupper()) / len(letters) > 0.9:
+        return " ".join([w.capitalize() if w.isupper() else w for w in s.split()])
+    return s
+
+
+
+def _strip_us_state_suffix(city: str) -> str:
+    """If city ends with a US state name (e.g. 'Denver Colorado'), strip the state.
+    Applied only when country is explicitly USA.
     """
-    Returns (country_alpha3, start_idx, end_idx) where start/end are the match span in s.
-    If no country found: (None, None, None)
+    if not city or " " not in city:
+        return city
+
+    # Prefer multi-word states first (e.g. 'New York')
+    words = city.split()
+    for n in (2, 3):  # max state name length in words we care about
+        if len(words) > n:
+            candidate = " ".join(words[-n:])
+            if candidate in US_STATE_NAMES:
+                return " ".join(words[:-n]).strip()
+    # Single-word states
+    if words[-1] in US_STATE_NAMES:
+        return " ".join(words[:-1]).strip()
+    return city
+
+
+def postprocess_city(city: Optional[str], country: Optional[str], event_name: str) -> Optional[str]:
+    """Targeted, low-risk fixes for a handful of known patterns.
+    If a fix could be ambiguous, we do NOT apply it.
     """
-    # Prefer well-formed "(AAA)"
-    m = None
-    for m in COUNTRY_PAREN_RE.finditer(s):
-        pass
-    if m:
-        return m.group("country"), m.start(), m.end()
+    if city is None:
+        return None
+    c = city.strip()
+    if not c:
+        return None
 
-    # Malformed "AAA)" (missing '(')
-    m2 = None
-    for m2 in COUNTRY_RPAREN_RE.finditer(s):
-        pass
-    if m2:
-        return m2.group("country"), m2.start(), m2.end()
+    ev = (event_name or "").lower()
 
-    # Country names in parentheses (take the last one that maps to an ISO code)
-    parens = list(PAREN_RE.finditer(s))
-    for pm in reversed(parens):
-        content = pm.group(1).strip()
+    # Rock Junior is an event name, not a location.
+    if "rock junior" in ev and c.lower() in {"rock", "rock junior"}:
+        return None
 
-        # Skip discipline markers
-        if re.fullmatch(r"[LSB](?:\s*,\s*[LSB])+", content, flags=re.I) or re.fullmatch(
-            r"[LSB]", content, flags=re.I
-        ):
+    # 1) '... competition of Aggtelek' -> 'Aggtelek' (avoid touching 'La Paz', etc.)
+    if c.lower().startswith("of "):
+        c = c[3:].strip()
+
+    # 2) Known event-prefix phrases that are not locations
+    prefix_phrases = [
+        "speed rock",
+        "blocmaster",
+        "bouldertag",
+        "nikoloklettern",
+        "demonstration",
+        "triglav the rock",
+        "copa aldea",
+        "bouldertehdas",
+        "master",  # e.g. 'Master WARSAW'
+    ]
+    for ph in prefix_phrases:
+        if c.lower().startswith(ph + " "):
+            c = c[len(ph) + 1 :].strip()
+            break
+
+    # 3) 'Boulder Montpellier' (discipline word) but keep city 'Boulder'
+    if c.lower().startswith("boulder ") and c.strip().lower() != "boulder":
+        c = c.split(" ", 1)[1].strip()
+
+    # 4) 'namBa HIPS' -> 'namBa' only when the raw name clearly contains that token
+    if c.lower().endswith(" hips") and "namba hips" in ev:
+        c = re.sub(r"\s+hips\b", "", c, flags=re.IGNORECASE).strip()
+
+    # 5) 'Qinghai Province' -> 'Qinghai' only when country is explicitly China (CHN)
+    if country == "CHN" and re.search(r"\bprovince\b\s*$", c, flags=re.IGNORECASE):
+        c = re.sub(r"\s+province\s*$", "", c, flags=re.IGNORECASE).strip()
+
+    # 6) 'Denver Colorado' -> 'Denver' only when country is explicitly USA
+    if country == "USA":
+        c2 = _strip_us_state_suffix(c)
+        if c2:
+            c = c2
+
+    c = tidy_case(c).strip()
+    return c or None
+
+
+def finalize_city(city_raw: str, country: Optional[str], event_name: str) -> Optional[str]:
+    """Clean + targeted postprocessing."""
+    return postprocess_city(clean_city(city_raw), country, event_name)
+
+def extract_tail_location(prefix: str) -> Optional[str]:
+    """
+    Extract the tail of a prefix when we have "... <City>, <Country> <Year>" but no other separators.
+    Example: "IFSC Asian Cup Hong Kong" -> "Hong Kong"
+    """
+    words = [w for w in prefix.split() if w.strip()]
+    tail = []
+    for w in reversed(words):
+        w_clean = re.sub(r"^[^\w]+|[^\w]+$", "", w)
+        if not w_clean:
             continue
-
-        # Skip 3-letter codes (handled above)
-        if re.fullmatch(r"[A-Z]{3}", content):
+        wl = w_clean.lower()
+        if wl in STOPWORDS:
             continue
-
-        alpha3 = _country_name_to_alpha3(content)
-        if alpha3:
-            return alpha3, pm.start(), pm.end()
-
-    return None, None, None
-
-
-# ---- City extraction / cleanup ------------------------------------------------
-
-# separators: comma or hyphen followed by whitespace (covers " - ", "(B)- Munich", "Cup- Kitzbuhel")
-SEP_RE = re.compile(r"(?:,\s*|-\s+)")
-DISC_RE = re.compile(r"\(\s*(?:L|S|B|lead|speed|boulder)(?:\s*,\s*(?:L|S|B|lead|speed|boulder))*\s*\)", re.I)
-DISC_MAL_RE = re.compile(r"\b[LSB]\)", re.I)
-
-# Regions that can appear between event name and city in "X Games Asia Shanghai" patterns
-REGION_WORDS_STRICT = {"asia", "europe", "africa", "oceania", "nordic", "pan", "pan-am", "panam", "panamerican"}
-
-# If the extracted "city" equals one of these, it's (in practice) an event brand/name, not a location.
-# (Example: Melloblocco is a bouldering gathering in Val Masino / Val di Mello, not a city.)
-KNOWN_NOT_CITY = {"melloblocco"}
+        if wl in KEYWORDS_WORDS:
+            break
+        if re.fullmatch(r"(19|20)\d{2}", wl):
+            continue
+        tail.append(w_clean)
+        if len(tail) >= 4:
+            break
+    if not tail:
+        return None
+    return " ".join(reversed(tail)).strip()
 
 
-def _trim_leading_regions(s: str) -> str:
-    toks = s.split()
-    while len(toks) > 1 and toks[0].strip(".,;:").lower() in REGION_WORDS_STRICT:
-        toks = toks[1:]
-    return " ".join(toks)
+def _cut_after_keywords(text: str) -> str:
+    last_end = None
+    for mm in EVENT_KEYWORD_RE.finditer(text):
+        last_end = mm.end()
+    if last_end is not None and last_end < len(text):
+        rest = text[last_end:].strip(" -,:;").strip()
+        if rest and any(ch.isalpha() for ch in rest):
+            return rest
+    return text
 
 
-def _strip_trailing_country_from_city(chunk: str) -> str:
-    """Remove trailing '(AAA)' or '(Country Name)' or ' AAA)' at the end of a city chunk."""
-    c = chunk.strip()
+def clean_city(city_raw: str) -> Optional[str]:
+    """Normalize/clean a raw city candidate; return None if it doesn't look like a location."""
+    if not city_raw:
+        return None
 
-    m = re.search(r"\s*\(([^()]*)\)\s*$", c)
+    c = city_raw
+    c = DISCIPLINE_BLOCK_RE.sub("", c)
+    c = DISCIPLINE_PAREN_RE.sub("", c)
+    c = " ".join(c.split()).strip().strip('"\'')
+
+    # Remove leading numbering like "3. BELGRADE ..."
+    c = re.sub(r"^\d+\s*[\.\)]\s*", "", c)
+    c = re.sub(r"^(?:\d+(?:st|nd|rd|th))\s+", "", c, flags=re.IGNORECASE)
+
+    # Special patterns
+    m = re.match(r"^The\s+Rock\s+(.+)$", c, re.IGNORECASE)
     if m:
-        content = m.group(1).strip()
-        if re.fullmatch(r"[A-Z]{3}", content):
-            c = c[: m.start()].rstrip()
-        else:
-            alpha3 = _country_name_to_alpha3(content)
-            if alpha3:
-                c = c[: m.start()].rstrip()
+        c = m.group(1).strip()
+    m = re.match(r"^(.+?)\s+Natural\s+Games$", c, re.IGNORECASE)
+    if m:
+        c = m.group(1).strip()
 
-    # malformed trailing " AAA)"
-    c = re.sub(r"\s+[A-Z]{3}\)\s*$", "", c)
-    return c.strip()
+    # Common venue prefix
+    c = re.sub(r"^AREA\s*47\s+", "", c, flags=re.IGNORECASE)
 
+    # "Città di X"
+    m = re.search(r"Citt[àa][\'’]?\s*di\s*(.+)$", c, re.IGNORECASE)
+    if m:
+        c = m.group(1).strip()
 
-def _internal_location_suffix(chunk: str) -> str:
-    """
-    If chunk still contains event keywords, try to keep only the suffix that looks like the location.
-    Examples:
-      - "Asia Cup Uttarkashi" -> "Uttarkashi"
-      - "Boulder Masters Grenoble" -> "Grenoble"
-      - "Boulder Montpellier" -> "Montpellier"
+    c = c.strip().strip(",;:-").strip()
 
-    Conservative: if we can't produce a non-empty suffix, keep the original chunk.
-    """
-    toks = chunk.split()
-    if len(toks) < 2:
-        return chunk
+    # If there's a year inside, keep tail after the last year (often "... 2012 Huaraz")
+    years = list(YEAR_RE.finditer(c))
+    if years:
+        last = years[-1]
+        tail = c[last.end():].strip(" ,;:-").strip()
+        if tail and any(ch.isalpha() for ch in tail):
+            c = tail
 
-    # acceptable keywords to cut after
-    acceptable = {
-        "cup", "copa", "festival", "contest", "open", "trophy", "series", "games", "game",
-        "championship", "championships", "bouldering", "climbing",
-        "boulder", "speed", "master", "masters", "rockmaster", "rockmasters", "rockstars",
+    # Cut after last event keyword if it leaves something meaningful
+    c = _cut_after_keywords(c)
+
+    # If ends with a keyword (and no rest), take prefix before keyword, then cut again
+    m_end = END_KEYWORD_RE.search(c)
+    if m_end:
+        prefix = c[:m_end.start()].strip(" ,;:-").strip()
+        if prefix and any(ch.isalpha() for ch in prefix):
+            c = prefix
+    c = _cut_after_keywords(c)
+
+    # Strip edge noise words
+    words = c.split()
+    noise_edge = {
+        "ifsc","uiaa","climbing","world","cup","worldcup","championship","championships","series",
+        "open","masters","festival","event","international","internationals","competition","competitions",
+        "youth","junior","senior","days","trophy","x-games","xgames","espn","rockstars","rockstar","int","intl"
     }
+    changed = True
+    while changed and words:
+        changed = False
+        w0 = re.sub(r"^[^\w]+|[^\w]+$", "", words[0]).lower()
+        w1 = re.sub(r"^[^\w]+|[^\w]+$", "", words[-1]).lower()
+        if w0 in noise_edge:
+            words = words[1:]
+            changed = True
+            continue
+        if w1 in noise_edge:
+            words = words[:-1]
+            changed = True
+            continue
+    c = " ".join(words).strip().strip(",;:-").strip()
 
-    norms = [t.strip(".,;:").lower() for t in toks]
-    last_pos = None
-    last_kw = None
-    for i, n in enumerate(norms):
-        if n in acceptable:
-            last_pos = i
-            last_kw = n
+    # Remove trailing ESPN / X-Games if still present
+    c = re.sub(r"\bX-?Games\b\.?$", "", c, flags=re.IGNORECASE).strip()
+    c = re.sub(r"\bESPN\b\.?$", "", c, flags=re.IGNORECASE).strip()
+    c = c.strip(" ,;:-").strip()
 
-    if last_pos is None:
-        return chunk
-
-    start = last_pos + 1
-
-    # special for "copa <name> <city>" -> skip also <name>
-    if last_kw == "copa" and start < len(toks) - 1:
-        start += 1
-
-    if start >= len(toks):
-        return chunk
-
-    out = " ".join(toks[start:]).strip()
-    out = _trim_leading_regions(out)
-    return out or chunk
-
-
-def _cleanup_city(city_chunk: str) -> str:
-    c = _normalize_spaces(city_chunk).strip().strip('"').strip()
-    c = c.replace("–", "-").replace("—", "-").replace("−", "-")
-
-    # low-risk phrase removals (seen in this dataset)
-    c = re.sub(r"^\s*the\s+rock\s+", "", c, flags=re.I)
-    c = re.sub(r"\bnatural\s+games?\b", "", c, flags=re.I)
-    c = re.sub(r"\bat\s+sea\b", "", c, flags=re.I)
-    c = re.sub(r"^\s*speed\s+rock\s+", "", c, flags=re.I)
-    c = re.sub(r"^\s*boulder\s+masters?\s+", "", c, flags=re.I)
-    c = re.sub(r"\s+x-?games?\s*$", "", c, flags=re.I)
-
-    # remove ordinals like "10th"
-    c = re.sub(r"\b\d+(?:st|nd|rd|th)\b", "", c, flags=re.I)
-
-    # remove discipline markers anywhere
-    c = DISC_RE.sub(" ", c)
-    c = DISC_MAL_RE.sub(" ", c)
-
-    # remove embedded years
-    c = YEAR_RE.sub(" ", c)
-
-    # Ravenna special case (kept from your original script idea)
-    c = re.sub(r"Citt[àa]['’]?\s*di\s*", "", c, flags=re.I)
-
-    # remove trailing country info
-    c = _strip_trailing_country_from_city(c)
-
-    # if leftover "- " segments exist inside the chunk, keep only the last segment
-    if re.search(r"-\s+", c):
-        parts = re.split(r"-\s+", c)
-        for part in reversed([p.strip() for p in parts]):
-            if part:
-                c = part
-                break
-
-    # remove leading ordinals like "3."
-    c = re.sub(r"^\s*\d+\s*[\.\)]\s*", "", c)
-
-    # remove facility prefixes like "AREA 47"
-    c = re.sub(r"^\s*AREA\s*\d+\s+", "", c, flags=re.I)
-
-    c = _normalize_spaces(c)
-    c = _internal_location_suffix(c)
-    c = _normalize_spaces(c)
-
-    # final trims
-    c = c.strip(" ,;-")
-    c = _trim_leading_regions(c)
+    c = tidy_case(c)
 
     if not c:
-        return ""
-
-    # must contain at least one letter
-    if not re.search(r"[A-Za-zÀ-ÖØ-öø-ÿ]", c):
-        return ""
-
-    # avoid absurdly long leftovers
-    if len(c) > 60 or len(c.split()) > 8:
-        return ""
-
-    # normalize ALL CAPS to Title Case (purely cosmetic)
-    if c.isupper() and len(c) > 3:
-        c = c.title()
-
-    # suppress known event names that are not locations
-    if c.strip().lower() in KNOWN_NOT_CITY:
-        return ""
+        return None
+    cl = c.lower()
+    if any(sub in cl for sub in BLACKLIST_CITY_SUBSTR):
+        return None
+    if cl in {"republic of korea", "korea", "china"}:
+        return None
+    if "(" in c or ")" in c:
+        return None
+    if not any(ch.isalpha() for ch in c):
+        return None
+    # If it's exactly an ISO3 country code, it's not a city
+    if re.fullmatch(r"[A-Z]{3}", c) and pycountry is not None and pycountry.countries.get(alpha_3=c) is not None:
+        return None
 
     return c
 
 
-# ---- Fallback (when no explicit separator) -----------------------------------
+# --- Public API -----------------------------------------------------------
 
-STOP_KEYWORDS = {
-    # Acceptable "event-type" words that often appear right before a location suffix
-    "cup", "copa", "festival", "contest", "open", "trophy", "series", "games", "game",
-    "championship", "championships", "bouldering", "climbing", "bloc", "rockmaster", "rockmasters", "rockstars",
-    # Not acceptable (too generic): used as a stop, but we won't accept the suffix if we stopped on these
-    "event", "promo", "promotional",
-}
-ACCEPTABLE_STOPS = {
-    "cup", "copa", "festival", "contest", "open", "trophy", "series", "games", "game",
-    "championship", "championships", "bouldering", "climbing", "bloc", "rockmaster", "rockmasters", "rockstars",
-}
-
-
-def _suffix_city_from_left(left: str) -> str:
+def parse_city_country(event_name: str) -> Tuple[Optional[str], Optional[str]]:
     """
-    When there's no explicit delimiter, try to take the suffix after a stop keyword near the end:
-      "Youth Color Climbing Festival Imst" -> "Imst"
-      "Tout a Bloc l'Argentière la Bessée" -> "l'Argentière la Bessée"
-
-    Conservative: only accept if the stop keyword is in ACCEPTABLE_STOPS.
+    Extract (city, country_iso3) from an event name.
+    Country is ISO3 (e.g. "FRA"). If not confidently extractable, returns None.
     """
-    toks = left.split()
-    if not toks:
-        return ""
+    s = " ".join(str(event_name).split())
 
-    suffix = []
-    stop = None
-    for tok in reversed(toks):
-        t = tok.strip(".,;:").lower()
-        if t in STOP_KEYWORDS:
-            stop = t
+    # 1) Country explicit: "(FRA)" or broken " CHN)"
+    anchor = None
+    country = None
+
+    m_iso = None
+    for m_iso in COUNTRY_ISO3_PAREN_RE.finditer(s):
+        pass
+    if m_iso:
+        country = m_iso.group(1)
+        anchor = (m_iso.start(), m_iso.end())
+    else:
+        m_iso2 = None
+        for m_iso2 in COUNTRY_ISO3_RPAREN_RE.finditer(s):
+            pass
+        if m_iso2:
+            iso = m_iso2.group(1)
+            # Only accept if it's a real ISO3 country code (requires pycountry)
+            if pycountry is not None and pycountry.countries.get(alpha_3=iso) is not None:
+                country = iso
+                anchor = (m_iso2.start(), m_iso2.end())
+
+    # 2) Country name in parentheses "(France)"
+    if anchor is None:
+        m_name = None
+        for m_name in PAREN_CONTENT_RE.finditer(s):
+            pass
+        if m_name:
+            iso3 = country_name_to_iso3_safe(m_name.group(1))
+            if iso3:
+                country = iso3
+                anchor = (m_name.start(), m_name.end())
+
+    # City extraction (country anchor case)
+    if anchor is not None:
+        left = DISCIPLINE_BLOCK_RE.sub("", s[:anchor[0]].rstrip())
+        matches = list(SEP_RE.finditer(left))
+        city_raw = ""
+
+        # Walk separators from the end, but avoid selecting a trailing region token like "NSW".
+        for i in range(len(matches) - 1, -1, -1):
+            m = matches[i]
+            chunk = left[m.end():].strip().strip(" ,;:-")
+            if not chunk:
+                continue
+
+            # If the chunk is a known venue/facility (not a city), prefer the previous segment.
+            # Example: "Shanghai, Century Plaza (CHN)" -> "Shanghai"
+            if chunk.lower() in VENUE_CHUNKS and i - 1 >= 0:
+                seg_start = matches[i - 1].end()
+                seg_end = m.start()
+                prev = left[seg_start:seg_end].strip().strip(" ,;:-")
+                if prev:
+                    city_raw = prev
+                    break
+                continue
+
+            # If the last chunk is a known region abbreviation (e.g. NSW), keep the previous segment as the city.
+            if re.fullmatch(r"[A-Z]{2,3}", chunk) and chunk in REGION_ABBREV and i - 1 >= 0:
+                seg_start = matches[i - 1].end()
+                seg_end = m.start()
+                prev = left[seg_start:seg_end].strip().strip(" ,;:-")
+                if prev:
+                    city_raw = prev
+                    break
+                continue
+
+            city_raw = chunk
             break
-        suffix.append(tok)
 
-    if stop is None:
-        return ""
-    if stop not in ACCEPTABLE_STOPS:
-        return ""
-
-    return " ".join(reversed(suffix)).strip()
-
-
-# ---- City/Country split from location chunks ---------------------------------
-
-def _split_city_and_country(chunk: str) -> Tuple[str, Optional[str]]:
-    """
-    Split a location chunk into (city, country_alpha3) when the country is explicit.
-    Returns the (possibly empty) city string and the country code (or None).
-    """
-    if not chunk:
-        return "", None
-
-    raw = _normalize_spaces(chunk).strip().strip(",")
-    if not raw:
-        return "", None
-
-    # comma-separated "City, Country" or "City, USA"
-    if "," in raw:
-        parts = [p.strip() for p in raw.split(",") if p.strip()]
-        if len(parts) >= 2:
-            country_candidate = parts[-1]
-            alpha3 = _country_name_to_alpha3(country_candidate)
-            if not alpha3 and re.fullmatch(r"[A-Z]{3}", country_candidate):
-                alpha3 = country_candidate
-            if alpha3:
-                city_part = ", ".join(parts[:-1]).strip()
-                return city_part, alpha3
-
-    # trailing country code "City USA"
-    m = re.search(r"\b(?P<country>[A-Z]{3})\b$", raw)
-    if m:
-        country = m.group("country")
-        city_part = raw[: m.start()].strip(" ,;-")
-        return city_part, country
-
-    # full chunk equals a country name
-    alpha3 = _country_name_to_alpha3(raw)
-    if alpha3:
-        return "", alpha3
-
-    # try trailing country name without comma: "Hong Kong China"
-    toks = raw.split()
-    for i in range(1, min(4, len(toks)) + 1):
-        candidate = " ".join(toks[-i:])
-        alpha3 = _country_name_to_alpha3(candidate)
-        if alpha3:
-            city_part = " ".join(toks[:-i]).strip()
-            return city_part, alpha3
-
-    return raw, None
-
-
-def _city_chunk_from_left(left: str) -> str:
-    seps = list(SEP_RE.finditer(left))
-    if not seps:
-        return _suffix_city_from_left(left)
-
-    for i in range(len(seps) - 1, -1, -1):
-        chunk = left[seps[i].end():].strip()
-        if not chunk:
-            continue
-        city_part, country_part = _split_city_and_country(chunk)
-        sep_text = seps[i].group(0)
-        if city_part or not country_part or not sep_text.startswith(","):
-            return chunk
-        if i == 0:
-            return left
-
-    return ""
-
-
-# ---- Public API ---------------------------------------------------------------
-
-def parse_city_country(name: str) -> Tuple[Optional[str], Optional[str]]:
-    """
-    Parse an event name and return (city, country_alpha3).
-
-    - country_alpha3 is an ISO-3166 alpha-3 code (e.g. FRA, USA, JPN)
-    - city is the best-effort extracted location string
-    - returns None for city and/or country when extraction is not possible without guessing
-    """
-    s = _normalize_spaces(name)
-
-    country, c_start, _ = _extract_country(s)
-
-    # Anchor on country when present
-    if country and c_start is not None:
-        left = s[:c_start].rstrip().rstrip(" ,-")
-        city_chunk = _city_chunk_from_left(left)
-        city_raw, _ = _split_city_and_country(city_chunk)
-        city = _cleanup_city(city_raw) if city_raw else ""
-        return (city or None), country
-
-    # Otherwise anchor on the last year
+        return finalize_city(city_raw, country, s), country
+# 3) No country. Use last year as an anchor, and try patterns like "... <City>, USA 1997"
     m_year = None
     for m_year in YEAR_RE.finditer(s):
         pass
-
     if m_year:
-        left = s[:m_year.start()].rstrip().rstrip(" ,-")
-        city_chunk = _city_chunk_from_left(left)
-        if not city_chunk:
-            _, country_from_chunk = _split_city_and_country(left)
-            if country_from_chunk:
-                return None, country_from_chunk
+        left = DISCIPLINE_BLOCK_RE.sub("", s[:m_year.start()].rstrip())
+        matches = list(SEP_RE.finditer(left))
+        if not matches:
+            return None, None
 
-        city_raw, country_from_chunk = _split_city_and_country(city_chunk)
-        city = _cleanup_city(city_raw) if city_raw else ""
-        return (city or None), country_from_chunk
+        # Walk separators from the end to find "<city> <country>"
+        for i in range(len(matches) - 1, -1, -1):
+            m = matches[i]
+            after = left[m.end():].strip().strip(" ,;:-")
+            if not after:
+                continue
+
+            maybe_country = looks_like_country_token(after)
+            if maybe_country:
+                if i - 1 >= 0:
+                    seg_start = matches[i - 1].end()
+                    seg_end = m.start()
+                    city_part = left[seg_start:seg_end].strip().strip(" ,;:-")
+                    return finalize_city(city_part, maybe_country, s), maybe_country
+
+                # No earlier separator: extract tail of the prefix
+                prefix = left[:m.start()].strip()
+                tail = extract_tail_location(prefix)
+                return finalize_city(tail or "", maybe_country, s), maybe_country
+
+            # State/province abbreviation (e.g. "NSW"): keep previous segment as city
+            if re.fullmatch(r"[A-Z]{2,3}", after) and i - 1 >= 0:
+                seg_start = matches[i - 1].end()
+                seg_end = m.start()
+                city_part = left[seg_start:seg_end].strip().strip(" ,;:-")
+                return finalize_city(city_part, None, s), None
+
+            # Otherwise: last chunk is the city
+            return finalize_city(after, None, s), None
 
     return None, None
+
+
+# --- CLI ------------------------------------------------------------------
+
+def main() -> int:
+    import csv
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--input", required=True, help="Input CSV containing a 'name' column.")
+    ap.add_argument("--output", required=True, help="Output CSV path.")
+    args = ap.parse_args()
+
+    with open(args.input, "r", encoding="utf-8", newline="") as f_in:
+        reader = csv.DictReader(f_in)
+        if "name" not in (reader.fieldnames or []):
+            raise SystemExit("Input CSV must contain a 'name' column.")
+        rows = list(reader)
+        fieldnames = list(reader.fieldnames or [])
+
+    # Ensure output has city/country columns
+    if "city" not in fieldnames:
+        fieldnames.append("city")
+    if "country" not in fieldnames:
+        fieldnames.append("country")
+
+    for r in rows:
+        city, country = parse_city_country(r.get("name", ""))
+        r["city"] = city
+        r["country"] = country
+
+    with open(args.output, "w", encoding="utf-8", newline="") as f_out:
+        writer = csv.DictWriter(f_out, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    return 0
+
+
+if __name__ == "__main__":  # pragma: no cover
+    raise SystemExit(main())

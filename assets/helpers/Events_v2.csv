@@ -28,7 +28,7 @@ UIAA Worldcup - Nürnberg 1991,Nürnberg,
 UIAA Worldcup - Birmingham 1991,Birmingham,
 "IFSC Europe - Continental Cup (L,S) - Belgrad (SRB) 2020 - CANCELLED",Belgrad,SRB
 IFSC Europe - Continental Cup - Voronezh (RUS) - CANCELLED,Voronezh,RUS
-Olympic Games -  Sport Climbing combined event -Tokyo (JPN) 2020,combined event -Tokyo,JPN
+Olympic Games -  Sport Climbing combined event -Tokyo (JPN) 2020,Tokyo,JPN
 IFSC - Paraclimbing World Cup - Innsbruck (AUT) 2020 - POSTPONED,Innsbruck,AUT
 "IFSC Youth - World Championships (B,S,L) - Voronezh (RUS) 2020 - CANCELLED",Voronezh,RUS
 IFSC Pan Am - Continental Championships (C) - Los Angeles (USA) 2020,Los Angeles,USA
@@ -88,7 +88,7 @@ UIAA Worldcup - Ekaterinburg 1996,Ekaterinburg,
 UIAA Worldcup - Kranj 1996,Kranj,
 UIAA Worldcup - Graz 1996,Graz,
 European Championship - Paris 1996,Paris,
-"UIAA Masters - ESPN X-Games - Newport, USA 1996",USA,
+"UIAA Masters - ESPN X-Games - Newport, USA 1996",Newport,USA
 European Youth Cup - Dortmund (GER) 1996,Dortmund,GER
 European Youth Cup - Ravenna (ITA) 1996,Ravenna,ITA
 European Youth Cup - Skofja Loka (SLO) 1996,Skofja Loka,SLO
@@ -110,7 +110,7 @@ European Youth Cup - Bern (SUI) 1997,Bern,SUI
 European Youth Cup - Parma (ITA) 1997,Parma,ITA
 UIAA Masters - Serre Chevalier 1997,Serre Chevalier,
 UIAA Masters - Rock Masters Arco 1997,Arco,
-"UIAA Masters - San Diego X-Games, USA 1997",USA,
+"UIAA Masters - San Diego X-Games, USA 1997",San Diego X,USA
 UIAA Youth Worldchampionship - Moscow (RUS) 1998,Moscow,RUS
 UIAA Worldcup - Beauregard (ITA) 1998,Beauregard,ITA
 UIAA Worldcup - Courmayeur (ITA) 1998,Courmayeur,ITA
@@ -147,7 +147,7 @@ European Youth Cup - Bern (SUI) 1999,Bern,SUI
 European Youth Cup - Albertville (FRA) 1999,Albertville,FRA
 EuropeanYouth Cup - Amsterdam (NED) 1999,Amsterdam,NED
 UIAA Masters - Serre-Chevalier (FRA) 1999,Serre-Chevalier,FRA
-Int. Event - Arco Rock Master (ITA) 1999,Arco Rock Master,ITA
+Int. Event - Arco Rock Master (ITA) 1999,Arco,ITA
 Int. Event - Sheffield (GBR) 1999,Sheffield,GBR
 UIAA Asian Championship - Kuala Lumpur (MAS) 2000,Kuala Lumpur,MAS
 UIAA European Championship - München (GER) 2000,München,GER
@@ -164,7 +164,7 @@ UIAA Worldcup - Nantes (FRA) 2000,Nantes,FRA
 UIAA Worldcup - Kranj (SLO) 2000,Kranj,SLO
 UIAA Asian Youth Championship - Beijing (CHN) 2000,Beijing,CHN
 UIAA World Youth Championship - Amsterdam (NED) 2000,Amsterdam,NED
-Pan American Cup - Peru 2000,Peru,
+Pan American Cup - Peru 2000,,PER
 European Youth Cup - Imst (AUT) 2000,Imst,AUT
 European Youth Cup - L'Aprica (ITA) 2000,L'Aprica,ITA
 European Youth Cup - Kranj (SLO) 2000,Kranj,SLO
@@ -179,7 +179,7 @@ UIAA Asian Championship - Jakarta (INA) 2001,Jakarta,INA
 Asian Bouldering Championship - Taipei (TPE) 2001,Taipei,TPE
 UIAA Youth World Championship - Imst(AUT) 2001,Imst,AUT
 UIAA Youth World Championship SPEED - Imst (AUT) 2001,Imst,AUT
-UIAA Worldcup - GAP (FRA) 2001,GAP,FRA
+UIAA Worldcup - GAP (FRA) 2001,Gap,FRA
 UIAA Worldcup - Chamonix (FRA) 2001,Chamonix,FRA
 UIAA Worldcup - Munich (GER ) 2001,Munich,GER
 UIAA Worldcup - Rovereto (ITA) 2001,Rovereto,ITA
@@ -206,7 +206,7 @@ Int. Event - Hood River (USA) 2001,Hood River,USA
 Int. Event - Serre Chevalier (FRA) 2001,Serre Chevalier,FRA
 Int. Event - L'Argentiere (FRA) 2001,L'Argentiere,FRA
 Int. Event - Rock Master Arco (ITA) 2001,Arco,ITA
-Int. Event - Blocmaster Grenoble (FRA) 2001,Blocmaster Grenoble,FRA
+Int. Event - Blocmaster Grenoble (FRA) 2001,Grenoble,FRA
 2. Int. SALEWA Masters - Scheidegg (GER) 2001,Scheidegg,GER
 Int. Event - Master WARSAW (POL) 2001,Warsaw,POL
 UIAA Youth World Championship Speed - Canteleu (FRA) 2002,Canteleu,FRA
@@ -224,7 +224,7 @@ UIAA Worldcup - Singapore (SIN) 2002,Singapore,SIN
 UIAA Worldcup - Rovereto (ITA) 2002,Rovereto,ITA
 UIAA Worldcup - Aprica (ITA) 2002,Aprica,ITA
 UIAA Worldcup - Kranj (SLO) 2002,Kranj,SLO
-Asian Youth Championship - Malaysia 2002,Malaysia,
+Asian Youth Championship - Malaysia 2002,,MYS
 UIAA European Championship - Chamonix (FRA) 2002,Chamonix,FRA
 Latin American Championship,,
 UIAA North American Youth Championship 2002,,
@@ -232,13 +232,13 @@ European Youth Cup - Imst (AUT) 2002,Imst,AUT
 European Youth Cup - Arco (ITA) 2002,Arco,ITA
 European Youth Cup - Veliko Tarnovo (BUL) 2002,Veliko Tarnovo,BUL
 European Youth Cup - Kranj (SLO) 2002,Kranj,SLO
-Int. Event - Marseille International Youth (FRA),Marseille International Youth,FRA
+Int. Event - Marseille International Youth (FRA),Marseille,FRA
 Int. Event - Klimax Goldfinger - Puurs (BEL) 2002,Puurs,BEL
 Rock Junior - Arco (ITA) 2002,Arco,ITA
 Int. Event - Serre Chevalier (FRA) 2002,Serre Chevalier,FRA
 Int. Event - L'Argentière (FRA) 2002,L'Argentière,FRA
 Int. Event - Speed Rock - Daone (ITA),Daone,ITA
-Int. Event - Arco Rockmaster (ITA) 2002,Arco Rockmaster,ITA
+Int. Event - Arco Rockmaster (ITA) 2002,Arco,ITA
 Int. Event - Schengzheng (CHN) 2002,Schengzheng,CHN
 Youth Worldchampionship - Veliko Tarnovo (BUL) 2003,Veliko Tarnovo,BUL
 UIAA Worldcup - Imst (AUT) 2003,Imst,AUT
@@ -287,16 +287,16 @@ UIAA Worldcup - Valence (FRA) 2004,Valence,FRA
 UIAA Worldcup - Brno (CZE) 2004,Brno,CZE
 UIAA Worldcup - Kranj (SLO) 2004,Kranj,SLO
 Int. Event - Birmingham (GBR) 2003,Birmingham,GBR
-Int. Event - Open Youth Marseille (FRA) 2003,Youth Marseille,FRA
+Int. Event - Open Youth Marseille (FRA) 2003,Marseille,FRA
 Rock Junior - Arco (ITA) 2003,Arco,ITA
 Spiderkids - Youth Color Climbing Festival - Imst (AUT) 2003,Imst,AUT
-"Spiderkids - 6. Int Trophy ""Citta'di Ravenna"" (ITA) 2003","""Ravenna",ITA
+"Spiderkids - 6. Int Trophy ""Citta'di Ravenna"" (ITA) 2003",Ravenna,ITA
 Int. Event - Speed Rock Daone (ITA) 2003 - not confirmed,Daone,ITA
 "Int. Event - Master/Event of Daroca, Zaragosa (ESP) 2003",Zaragosa,ESP
 Int. Event - Serre Chevalier (FRA) 2003,Serre Chevalier,FRA
 Int. Event - Boulder Masters Grenoble (FRA) 2003,Grenoble,FRA
 Int. Event - La Colmiane (FRA) 2003,La Colmiane,FRA
-Int. Event - Arco Rockmaster (ITA) 2003,Arco Rockmaster,ITA
+Int. Event - Arco Rockmaster (ITA) 2003,Arco,ITA
 Spiderkids - Open Youth Climbing Championship of the Czech Republic - Brno (CZE) 2003,Brno,CZE
 UIAA World Youth Championship - Edinburgh (GBR) 2004,Edinburgh,GBR
 UIAA Nordic Championship Bouldering (NOR) 2004,,NOR
@@ -305,17 +305,17 @@ European Youth Cup - Geneva (SUI) 2004,Geneva,SUI
 European Youth Cup - Imst (AUT) 2004,Imst,AUT
 European Youth Cup + Festival - Veliko Tarnovo (BUL) 2004,Veliko Tarnovo,BUL
 European Youth Cup - Kranj (SLO) 2004,Kranj,SLO
-Int. Event - Open Youth Marseille (FRA) 2004,Youth Marseille,FRA
+Int. Event - Open Youth Marseille (FRA) 2004,Marseille,FRA
 Int. Event Melloblocco - Val di Mello (ITA) 2004,Val di Mello,ITA
-EYCD - European Youth Climbing Days Arco (ITA) 2004,Days Arco,ITA
+EYCD - European Youth Climbing Days Arco (ITA) 2004,Arco,ITA
 Spiderkids - Youth Color Climbing Festival Imst (AUT) 2004,Imst,AUT
 Int. Youth Event - Citta di Ravenna (ITA) 2004,Ravenna,ITA
 Int. Youth Event - Petzen Trophy Kärnten (AUT) 2004,Kärnten,AUT
 Int. Event - OutDoor Climbing Events 2004 - Friedrichshafen (GER) 2004,Friedrichshafen,GER
-Spiderkids - Kids Climbing Competition of Aggtelek (HUN) 2004,Competition of Aggtelek,HUN
+Spiderkids - Kids Climbing Competition of Aggtelek (HUN) 2004,Aggtelek,HUN
 Int. Event - Grenoble (FRA) 2004,Grenoble,FRA
 Int. Event - Rockmaster Arco (ITA) 2004,Arco,ITA
-Spiderkids - Int. Youth Climbing Competitions Darvas Cup (HUN) 2004,Int. Youth Climbing Competitions Darvas Cup,HUN
+Spiderkids - Int. Youth Climbing Competitions Darvas Cup (HUN) 2004,Darvas,HUN
 Int. Event - Asia Cup Uttarkashi (IND) 2004,Uttarkashi,IND
 UIAA Worldcup (B) - Birmingham (GBR) 2005,Birmingham,GBR
 UIAA Worldcup (B+S) - Moscow (RUS) 2005,Moscow,RUS
@@ -338,7 +338,7 @@ UIAA Central-South American Championship - S. Antonio de los Altos (VEN) 2004,S.
 North American Championship - Mexico City (MEX) 2004 (incl. SpiderKids),Mexico City,MEX
 North American Championship - Mexico City (MEX) 2004 (Youth Bouldering),Mexico City,MEX
 UIAA World Youth Championship - Bejing (CHN) 2005,Bejing,CHN
-UIAA Asian Championship - Iran 2005,Iran,
+UIAA Asian Championship - Iran 2005,,IRN
 Asian Youth Championships,,
 European Youth Cup - Brno (CZE) 2005,Brno,CZE
 European Youth Cup - Imst (AUT) 2005,Imst,AUT
@@ -346,12 +346,12 @@ European Youth Cup - Geneva (SUI) 2005,Geneva,SUI
 European Youth Cup - Penne (ITA) 2005,Penne,ITA
 European Youth Cup - Kranj (SLO) 2005,Kranj,SLO
 International World Games (L+S) - Duisburg (GER) 2005,Duisburg,GER
-Int. Event - Open Youth Marseille (FRA) 2005,Youth Marseille,FRA
+Int. Event - Open Youth Marseille (FRA) 2005,Marseille,FRA
 Int. Event (B) Mello Blocco - Val Masino (ITA) 2005,Val Masino,ITA
 Spiderkids - Youth Color Climbing Festival Imst (AUT) 2005,Imst,AUT
 Int. Event (L+B+S) Rock Junior - Arco (ITA) 2005,Arco,ITA
 Int. Youth Event - Citta di Ravenna (ITA) 2005,Ravenna,ITA
-Int. Event - EYOF Climbing Demonstration Ligano (ITA),Demonstration Ligano,ITA
+Int. Event - EYOF Climbing Demonstration Ligano (ITA),Ligano,ITA
 Int. Youth Event - Petzen Trophy Kärnten 2005,Kärnten,
 Int. Youth Event - EYOF - Lignano (ITA) 2005,Lignano,ITA
 Int. Event (L) - Serre Chevalier (FRA) 2005,Serre Chevalier,FRA
@@ -362,7 +362,7 @@ UIAA World Youth Championship - Imst (AUT) 2006,Imst,AUT
 UIAA Asian Championships - Kaoshiung (TPE) 2006,Kaoshiung,TPE
 UIAA European Championship - Ekatarinburg (RUS) 2006,Ekatarinburg,RUS
 Central South America Championship - San Juan de los Morros (VEN),San Juan de los Morros,VEN
-North American Championships (L+S) - Denver Colorado (USA) 2006,Denver Colorado,USA
+North American Championships (L+S) - Denver Colorado (USA) 2006,Denver,USA
 UIAA Climbing Worldcup (B) - Birmingham (GBR) 2006,Birmingham,GBR
 UIAA Climbing Worldcup (B+S) - Veliko Tarnovo (BUL) 2006,Veliko Tarnovo,BUL
 UIAA Climbing Worldcup (L) - Puurs (BEL) 2006,Puurs,BEL
@@ -372,7 +372,7 @@ UIAA Climbing Worldcup (B) - Grindelwald (SUI) 2006,Grindelwald,SUI
 UIAA Climbing Worldcup (B) - Fiera di Primiero (ITA) 2006,Fiera di Primiero,ITA
 UIAA Climbing Worldcup (B) - Hall (AUT) 2006,Hall,AUT
 UIAA Climbing Worldcup (L+S) - Chamonix (FRA) 2006,Chamonix,FRA
-UIAA Climbing Worldcup (L) - Qinghai Province (CHN) 2006,Qinghai Province,CHN
+UIAA Climbing Worldcup (L) - Qinghai Province (CHN) 2006,Qinghai,CHN
 UIAA Climbing Worldcup (S) - Val Daone (ITA) 2006,Val Daone,ITA
 UIAA Climbing Worldcup (L+S) - Singapore (SIN) 2006,Singapore,SIN
 UIAA Climbing Worldcup (L+S) - Kuala Lumpur (MAS) 2006,Kuala Lumpur,MAS
@@ -387,9 +387,9 @@ European Youth Cup - Velika Tarnovo (BUL) 2006,Velika Tarnovo,BUL
 European Youth Cup - Annecy (FRA) 2006,Annecy,FRA
 European Youth Cup - Kranj (SLO) 2006,Kranj,SLO
 IFSC Asian Championships - Guangzhou (CHN) 2007,Guangzhou,CHN
-Int. Event - Open Youth Marseille (FRA) 2006,Youth Marseille,FRA
+Int. Event - Open Youth Marseille (FRA) 2006,Marseille,FRA
 Promotional Event - Melloblocco (ITA) 2006,,ITA
-Youth Color Climbing Festival Imst (AUT) 2006,Imst,AUT
+Youth Color Climbing Festival Imst (AUT) 2006,,AUT
 Int. Event (L+B+S) Rock Junior - Arco (ITA) 2006,Arco,ITA
 Int. Youth Event - Citta di Ravenna (ITA) 2006,Ravenna,ITA
 Spiderkids - Kärnten (AUT) 2006,Kärnten,AUT
@@ -397,7 +397,7 @@ Int. Youth Event - Petzen Trophy Kärnten (AUT) 2006,Kärnten,AUT
 Int. Event (L) - Serre Chevalier (FRA) 2006,Serre Chevalier,FRA
 Promotional Event (L+S) - Friedrichshafen 2006,Friedrichshafen,
 International Event (B) - L'Argentiere la Bessee (FRA) 2006,L'Argentiere la Bessee,FRA
-Int. Event - Aggtelek Cup  (HUN ) 2006,Aggtelek Cup,HUN
+Int. Event - Aggtelek Cup  (HUN ) 2006,Aggtelek,HUN
 Int. Event (L+B+S) ROCKMASTER - Arco (ITA) 2006,Arco,ITA
 International Event (B) - La Colmiane (FRA) 2006,La Colmiane,FRA
 International Event (L) - Dima-Bilbao (ESP) 2006,Dima-Bilbao,ESP
@@ -418,7 +418,7 @@ International Event (B) - L'Argentiere la Bessee (FRA) 2007,L'Argentiere la Bess
 International Event (B) - La Colmiane (FRA) Masters 2007,La Colmiane,FRA
 Promotional Event - Boulder Cup Novi Sad (SRB) 2007,Novi Sad,SRB
 Int. Event (L+B+S) ROCKMASTER - Arco (ITA) 2007,Arco,ITA
-Int. Youth Event - 3. BELGRADE OPEN TROPHY (SRB) 2007,Belgrade Open Trophy,SRB
+Int. Youth Event - 3. BELGRADE OPEN TROPHY (SRB) 2007,Belgrade,SRB
 Promo Event (L+S) Asia Cup - Changsha (CMA),Changsha,CMA
 IFSC ParaClimbing Cup 2008 - Moscow (RUS),Moscow,RUS
 IFSC Climbing Worldcup (B) - Erlangen (GER) 2007,Erlangen,GER
@@ -467,23 +467,23 @@ IFSC Climbing Worldcup (L) - Imst (AUT) 2008,Imst,AUT
 IFSC Climbing Worldcup (L+S) - Puurs (BEL) 2008,Puurs,BEL
 IFSC Climbing Worldcup (S+B) - Moscow (RUS) 2008,Moscow,RUS
 IFSC Climbing Worldcup (L) - Kranj (SLO) 2008,Kranj,SLO
-"Oceania Championship - Port Maquarie, NSW (AUS) 2009",NSW,AUS
+"Oceania Championship - Port Maquarie, NSW (AUS) 2009",Port Maquarie,AUS
 Asia Youth Championship - Almaty (KAZ) - 2009,Almaty,KAZ
 IFSC World Youth Championships - Valence (FRA) 2009,Valence,FRA
 Regional Event (B) - Kitzbühel (AUT) 2008,Kitzbühel,AUT
-Int. Youth Event - Open Youth Aix-en-Provence (FRA) 2008,Youth Aix-en-Provence,FRA
-Promo Event Kia X Games Asia (Speed) Shanghai (CHN) 2008,Shanghai,CHN
+Int. Youth Event - Open Youth Aix-en-Provence (FRA) 2008,Aix-en-Provence,FRA
+Promo Event Kia X Games Asia (Speed) Shanghai (CHN) 2008,,CHN
 Promotional Event Melloblocco (ITA) 2008,,ITA
 Youth Color Climbing Festival - Imst (AUT) 2008,Imst,AUT
 Int. Event (L+B) DimaRockmaster - Dima (ESP) 2008,Dima,ESP
-Int. Youth Event - Rock Junior (ITA) 2008,Rock Junior,ITA
-Promo Event Ambrosia Boulder Contest Zsombo (HUN) 2008,Zsombo,HUN
+Int. Youth Event - Rock Junior (ITA) 2008,,ITA
+Promo Event Ambrosia Boulder Contest Zsombo (HUN) 2008,,HUN
 Int. Youth Event - Petzen Trophy Kärnten (AUT) 2008,Kärnten,AUT
 Int. Event (L) - Serre Chevalier (FRA) 2008,Serre Chevalier,FRA
-Promo Event Tout a Bloc l'Argentière la Bessée (FRA) 2008,l'Argentière la Bessée,FRA
+Promo Event Tout a Bloc l'Argentière la Bessée (FRA) 2008,,FRA
 Promo Event Balkan Climbing Competition,,
 Promo Event - Asia Youth Cup Bali (Indonesia),Bali,IDN
-Promotional Event BAZ Bouldering at Sea Scheveningen Beach (NED),Scheveningen Beach,NED
+Promotional Event BAZ Bouldering at Sea Scheveningen Beach (NED),,NED
 Int. Event (L+B+S) ROCKMASTER - Arco (ITA) 2008,Arco,ITA
 Intl. Event - TreX Games Busan 2008 Intl. Sport Climbing Competition,Busan,
 International Event (S + L) - Shanghai (CHN) 2008,Shanghai,CHN
@@ -590,7 +590,7 @@ Ambrosia Boulder Contest - Zsombo (HUN) 2010,Zsombo,HUN
 International Event - Petzen Climbing Trophy - Petzen (AUT) 2010,Petzen,AUT
 "Intl. Youth Event - Petzen Climbing Trophy (L, S, B) - Petzen (AUT) 2010",Petzen,AUT
 Rock Master - World Championship Pre-event - Arco (ITA),Arco,ITA
-Rockmaster ARCO  2010 - Duel Lead,Arco,
+Rockmaster ARCO  2010 - Duel Lead,,
 European Youth Bouldering Event - L'Argeniere (FRA) 2010,L'Argeniere,FRA
 Promo Event (B) - Boulder Promo - Argentiere (FRA) 2010,Argentiere,FRA
 European Youth Bouldering Event - L'Argentiere (FRA) 2010,L'Argentiere,FRA
@@ -614,7 +614,7 @@ IFSC World Youth Championship - Central Saanich (CAN) - 2013,Central Saanich,CAN
 Promotional Event - CupOFF HUDY - Prague (CZE) 2011,Prague,CZE
 European Promo Event - Boulder - Sheffield (GBR) 2011,Sheffield,GBR
 Rheintal Cup - Kinder-Bouldertag Küblis (B),,
-Promotional Event - Nordic Bouldering Championship - Bouldertehdas Turku (FIN) 2011,Bouldertehdas Turku,FIN
+Promotional Event - Nordic Bouldering Championship - Bouldertehdas Turku (FIN) 2011,Turku,FIN
 Rheintal Cup - Junior Cup Dornbirn (L),,
 Rheintal Cup - Eidechsli Chur (L),,
 Promotional Event - Melloblocco (ITA) 2011,,ITA
@@ -640,7 +640,7 @@ European Paraclimbing Lead Championship - Chamonix (FRA) 2013,Chamonix,FRA
 Paraclimbing Cup Arco 2013 - Arco (ITA) 2013,Arco,ITA
 Paraclimbing Cup London (Lead) 2013 - London (GBR) 2013,London,GBR
 Paraclimbing Cup Laval (Boulder) 2013 - Laval (FRA) 2013,Laval,FRA
-"2nd CISM World Winter Games ""Annecy-Chamonix 2013""",Annecy-Chamonix,
+"2nd CISM World Winter Games ""Annecy-Chamonix 2013""",,
 The World Games 2013 - Cali (COL) 2013,Cali,COL
 "Asian Continental Championship - Tehran, (IRN) 2013",Tehran,IRN
 European Youth Cup (S) - Tarnow (POL) 2011,Tarnow,POL
@@ -675,7 +675,7 @@ IFSC Climbing Worldcup (L) - Inzai (JPN) 2012,Inzai,JPN
 IFSC Climbing Worldcup (L) - Kranj (SLO) 2012,Kranj,SLO
 Oceania International Open - Katoomba (AUS) 2014,Katoomba,AUS
 Asian University Climbing Championships - Singapore (SIN) 2014,Singapore,SIN
-Youth Olympic Games Nanjing (CHN) - Sports Lab - Climbing Showcase,Nanjing,CHN
+Youth Olympic Games Nanjing (CHN) - Sports Lab - Climbing Showcase,,CHN
 "PanAmerican Youth Championship (L,S, B) - Mexico City (MEX) 2014",Mexico City,MEX
 "IFSC World Youth Championship - Noumea, New Caledonia (FRA) - 2014",New Caledonia,FRA
 IFSC World Youth Championships - Arco (ITA) - 2015,Arco,ITA
@@ -711,12 +711,12 @@ Master Event - Adidas Rockstars (B) - Stuttgart (GER) 2015,Stuttgart,GER
 Promotional Event - 24 heures du mur (L) - Oloron Sainte Marie (FRA) 2015,Oloron Sainte Marie,FRA
 Intl. Event - Fajr Master - Zanjan (IRI) 2012,Zanjan,IRI
 European Promo Event (B) - Sheffield (GBR) 2012,Sheffield,GBR
-Intl. Event - Master de Bouldering The North Face (CHI) 2012,The North Face,CHI
+Intl. Event - Master de Bouldering The North Face (CHI) 2012,,CHI
 Rheintal Cup - Junior Cup Dornbirn (L) 2012,Dornbirn,
-Rheintal Cup - Bouldertag Küblis (B) 2012,Bouldertag Küblis,
+Rheintal Cup - Bouldertag Küblis (B) 2012,Küblis,
 Promotional Event - Melloblocco (ITA) 2012,,ITA
 Rheintal Cup - Eidechsli Chur (L) 2012,Eidechsli Chur,
-Promotional Event - namBa HIPS CUP (L) (JPN) 2012,namBa HIPS CUP,JPN
+Promotional Event - namBa HIPS CUP (L) (JPN) 2012,namBa,JPN
 Intl. Event - Youth Color Climbing Festival (under 14) - Imst (AUT) 2012,Imst,AUT
 Promotional Event - Copa Aldea (L) Lunahuana (PER) 2012,Lunahuana,PER
 Promotional Event - Festival del Andinismo 2012 (L - S) Huaraz (PER) 2012,Huaraz,PER
@@ -731,14 +731,14 @@ Rheintal Cup - Megusta Cup Chur 2012,Chur,
 Rheintal Cup - Megusta Cup Chur (S) 2012,Chur,
 Promotional Event - Les 24 heures du Mur (L) - Oloront Sainte Marie (FRA) 2012,Oloront Sainte Marie,FRA
 Wujiang Rock Master - Wujiang (CHN) 2012,Wujiang,CHN
-Rheintal Cup - Nikoloklettern Dornbirn (L) 2012,Nikoloklettern Dornbirn,
+Rheintal Cup - Nikoloklettern Dornbirn (L) 2012,Dornbirn,
 Promo Event - The Climbing Works International Festival (B) - Sheffield (GBR) 2013,Sheffield,GBR
-Promotional Event - Melloblocco 10th anniversary (ITA) 2013,Melloblocco anniversary,ITA
+Promotional Event - Melloblocco 10th anniversary (ITA) 2013,,ITA
 Promotional Event - namBa HIPS CUP (L) - Osaka (JPN) 2013,Osaka,JPN
 Intl. Event - Youth Color Climbing Festival (under 14) - Imst (AUT) 2013,Imst,AUT
 Promotional Event - Adidas Rockstars Korea (B) - Seoul (KOR) 2013,Seoul,KOR
 Kia World Extreme Games - Shanghai (CHN) 2013,Shanghai,CHN
-"Promotional Event - Adidas Rockstars China (B) - Shanghai, Century Plaza (CHN) 2013",Century Plaza,CHN
+"Promotional Event - Adidas Rockstars China (B) - Shanghai, Century Plaza (CHN) 2013",Shanghai,CHN
 "Intl. Youth Event - Petzen Climbing Trophy (L, S, B) - Petzen (AUT) 2013",Petzen,AUT
 European Promo Event (S) - Munich (GER) 2013,Munich,GER
 International Event (S) - Val Daone (ITA) 2013,Val Daone,ITA
@@ -899,7 +899,7 @@ Promo Event - Delfts Bleau International Youth Open - Delft (NED) 2018,Delft,NED
 International Climbing Series - FISE World Series Hiroshima 2018,Hiroshima,
 "International Climbing Series - Outdoor Village Speed Stars - Akishima, Tokyo (JPN) 2018",Tokyo,JPN
 Asia Sport For All R.O.X. Zero Gravity (B) - Manila (PHI) 2018,Manila,PHI
-International Climbing Series - Triglav The Rock Ljubljana (SLO) 2018,Triglav The Rock Ljubljana,SLO
+International Climbing Series - Triglav The Rock Ljubljana (SLO) 2018,Ljubljana,SLO
 Promo Event - International Climbing Elite Tournament (L + S) - Ningbo (CHN) 2018,Ningbo,CHN
 Promo Event - Youth Color Climbing Festival (under 14) - Imst (AUT) 2018,Imst,AUT
 "Promo Event - Youth Petzen Climbing Trophy (L, S, B) - Petzen (AUT) 2018",Petzen,AUT
@@ -989,7 +989,7 @@ International Climbing Series - Studio Bloc Masters 2019 - Pfungstadt (GER) 2019
 Promo Event - Delfts Bleau International Youth Open - Delft (NED) 2019,Delft,NED
 International Climbing Series - FISE World Series Hiroshima 2019,Hiroshima,
 "International Climbing Series - Outdoor Village Speed Stars - Akishima, Tokyo (JPN) 2019",Tokyo,JPN
-International Climbing Series - Triglav The Rock Ljubljana (SLO) 2019,Triglav The Rock Ljubljana,SLO
+International Climbing Series - Triglav The Rock Ljubljana (SLO) 2019,Ljubljana,SLO
 Promo Event - Youth Color Climbing Festival (under 14) - Imst (AUT) 2019,Imst,AUT
 "Promo Event - Youth Petzen Climbing Trophy (L, S, B) - Petzen (AUT) 2019",Petzen,AUT
 Promotional Youth Event -  Flatlander Cup - Arnhem (NED) 2019,Arnhem,NED
@@ -1039,7 +1039,7 @@ Promo Event - Delfts Bleau International Youth Open - Delft (NED) 2022,Delft,NED
 International Climbing Series - The internationals of Mayenne (B&L) - Laval (FRA) 2022,Laval,FRA
 IFSC - Test Event (B&L) - Barcelona (ESP) 2022,Barcelona,ESP
 "FISU University Championships (B,S,L) - Innsbruck (AUT) 2022",Innsbruck,AUT
-"IFSC Asia - Continental Championships (B, L, S, B&L) - Republic of Korea 2022",Republic of Korea,
+"IFSC Asia - Continental Championships (B, L, S, B&L) - Republic of Korea 2022",,PRK
 IFSC Asia - Continental Cup (B) - Manila (PHI) 2022,Manila,PHI
 "World Games (B,S,L) - Birmingham (USA) 2022",Birmingham,USA
 Asian Games - Hangzhou (CHN) 2022 - POSTPONED,Hangzhou,CHN
@@ -1050,10 +1050,10 @@ International Climbing Series - Triglav The Rock - Ljubljana (SLO) 2023,Ljubljan
 International Climbing Series - El-Capp Fest (B) - La Rochelle (FRA) 2023,La Rochelle,FRA
 International Climbing Series - The Belt and Road (S) - Ningbo (CHN) 2023,Ningbo,CHN
 NEOM IFSC Masters 2023,,
-"IFSC Asian Cup Hong Kong, China 2023",China,
+"IFSC Asian Cup Hong Kong, China 2023",Hong Kong,CHN
 IFSC Asian Qualifier Jakarta 2023,,
-IFSC Asian Cup Riyadh 2023,Riyadh,
-IFSC Youth World Championships Seoul 2023,Seoul,
+IFSC Asian Cup Riyadh 2023,,
+IFSC Youth World Championships Seoul 2023,,
 European Youth Cup (L) - Dornbirn (AUT) 2015,Dornbirn,AUT
 European Youth Cup (L) - Imst (AUT) 2015,Imst,AUT
 European Youth Cup (S) - Tarnow (POL) 2015,Tarnow,POL
@@ -1062,21 +1062,21 @@ European Youth Cup (B) - Laengenfeld (AUT) 2015,Laengenfeld,AUT
 European Youth Championship (B) - L'Argentière la Bessée (FRA) 2015,L'Argentière la Bessée,FRA
 European Youth Cup (L) - Mitterdorf (AUT) 2015,Mitterdorf,AUT
 European Youth Cup (S) - Imst (AUT) 2015,Imst,AUT
-IFSC South American Cup Curitiba 2023,Curitiba,
-IFSC South American Cup Mar del Plata 2023,Mar del Plata,
-IFSC Youth World Championships Guiyang 2024,Guiyang,
+IFSC South American Cup Curitiba 2023,,
+IFSC South American Cup Mar del Plata 2023,,
+IFSC Youth World Championships Guiyang 2024,,
 IFSC Oceania Qualifier Melbourne 2023,,
 IFSC Asia - Continental Youth Cup (S) - Singapore (SGP) 2023,Singapore,SGP
 "IFSC Asia - Continental Youth Championships (B, S, L, B&L) - Chongqing (CHN) 2023",Chongqing,CHN
 "IFSC Asia - Asian K Championships (B, L, S) - Jamshedpur (IND) 2023",Jamshedpur,IND
 IFSC African Qualifier Pretoria 2023,,
-IFSC European Cup Tarnów 2023,Tarnów,
-IFSC European Cup Chambéry 2023,Chambéry,
-IFSC European Cup Liébana 2023,Liébana,
-IFSC European Cup Loverval 2023,Loverval,
-IFSC European Cup Innsbruck 2023,Innsbruck,
-IFSC European Cup Žilina 2023,Žilina,
-IFSC European Cup Bologna 2023,Bologna,
+IFSC European Cup Tarnów 2023,,
+IFSC European Cup Chambéry 2023,,
+IFSC European Cup Liébana 2023,,
+IFSC European Cup Loverval 2023,,
+IFSC European Cup Innsbruck 2023,,
+IFSC European Cup Žilina 2023,,
+IFSC European Cup Bologna 2023,,
 IFSC European Qualifier Rome 2023,,
 IFSC European Qualifier Laval 2023,,
 "IFSC - Climbing Youth World Championships (B,S,L) - Dallas (USA) 2022",Dallas,USA
@@ -1084,26 +1084,26 @@ IFSC - Paraclimbing World Cup (L) - Salt Lake City (USA) 2022,Salt Lake City,USA
 IFSC - Paraclimbing World Cup (L) - Innsbruck (AUT) 2022,Innsbruck,AUT
 IFSC - Paraclimbing Master - Imst (AUT) 2022,Imst,AUT
 IFSC - Paraclimbing World Cup (L) - Villars (SUI) 2022,Villars,SUI
-IFSC World Cup Keqiao 2024,Keqiao,
-IFSC World Cup Wujiang 2024,Wujiang,
-IFSC World Cup Salt Lake City 2024,Salt Lake City,
-IFSC World Cup Innsbruck 2024,Innsbruck,
-IFSC World Cup Chamonix 2024,Chamonix,
-IFSC World Cup Briançon 2024,Briançon,
-IFSC World Cup Koper 2024,Koper,
-IFSC World Cup Prague 2024,Prague,
-IFSC World Cup Seoul 2024,Seoul,
-IFSC Paraclimbing World Cup Salt Lake City 2024,Salt Lake City,
-IFSC Paraclimbing World Cup Innsbruck 2024,Innsbruck,
-IFSC Paraclimbing European Championships Villars 2024,Villars,
-IFSC Paraclimbing World Cup Arco 2024,Arco,
-IFSC Asian Championships Tai'an 2024,Tai'an,
-Olympic Qualifier Series Shanghai 2024,Shanghai,
-Olympic Qualifier Series Budapest 2024,Budapest,
-Olympic Games Paris 2024,Paris,
-European Games Krakow-Malopolska 2023,Krakow-Malopolska,
-Asian Games Hangzhou 2022,Hangzhou,
-Pan American Games Santiago 2023,Santiago,
+IFSC World Cup Keqiao 2024,,
+IFSC World Cup Wujiang 2024,,
+IFSC World Cup Salt Lake City 2024,,
+IFSC World Cup Innsbruck 2024,,
+IFSC World Cup Chamonix 2024,,
+IFSC World Cup Briançon 2024,,
+IFSC World Cup Koper 2024,,
+IFSC World Cup Prague 2024,,
+IFSC World Cup Seoul 2024,,
+IFSC Paraclimbing World Cup Salt Lake City 2024,,
+IFSC Paraclimbing World Cup Innsbruck 2024,,
+IFSC Paraclimbing European Championships Villars 2024,,
+IFSC Paraclimbing World Cup Arco 2024,,
+IFSC Asian Championships Tai'an 2024,,
+Olympic Qualifier Series Shanghai 2024,,
+Olympic Qualifier Series Budapest 2024,,
+Olympic Games Paris 2024,,
+European Games Krakow-Malopolska 2023,,
+Asian Games Hangzhou 2022,,
+Pan American Games Santiago 2023,,
 "European Youth Cup (L,S) - Voiron (FRA) 2018",Voiron,FRA
 European Youth Cup (B) - Graz (AUT) 2018,Graz,AUT
 European Youth Cup (B) - Soure (POR) 2018,Soure,POR
@@ -1131,7 +1131,7 @@ IFSC Climbing Worldcup (B) - Munich (GER) 2017,Munich,GER
 "IFSC Climbing Worldcup (L,S) - Wujiang (CHN) 2017",Wujiang,CHN
 "IFSC Climbing Worldcup (L,S) - Xiamen (CHN) 2017",Xiamen,CHN
 IFSC Climbing Worldcup (L) - Kranj (SLO) 2017,Kranj,SLO
-IFSC Youth Asian Championships Guiyang 2025,Guiyang,
+IFSC Youth Asian Championships Guiyang 2025,,
 "IFSC Europe - Continental Youth Championships (B,S,L) - Perm (RUS)",Perm,RUS
 IFSC Europe - Continental Youth Cup (B) - Graz (AUT) 2021,Graz,AUT
 IFSC Europe - Continental Youth Cup (S) - Bochum (GER) 2021,Bochum,GER
@@ -1142,19 +1142,19 @@ IFSC Europe - Continental Youth Cup (S) - Gaflenz (AUT),Gaflenz,AUT
 IFSC Europe - Continental Youth Cup (L) - Veliko Tarnovo (BUL) 2021,Veliko Tarnovo,BUL
 "IFSC Europe - Continental Youth Cup (L,S) - Zilina (SVK) 2021",Zilina,SVK
 IFSC Europe - Continental Youth Cup (B) - Soure (POR) 2021,Soure,POR
-Studio Bloc Masters 2024,Masters,
+Studio Bloc Masters 2024,,
 Delfts Bleau International Youth Open 2024,,
 NEOM IFSC Masters 2024,,
-IFSC Youth Asian Championships Jamshedpur 2024,Jamshedpur,
-IFSC Youth European Cup Lublin 2024,Lublin,
-IFSC Youth European Cup Curno 2024,Curno,
-IFSC Youth European Cup Soure 2024,Soure,
-IFSC Youth European Cup Graz 2024,Graz,
-IFSC Youth European Cup Mezzolombardo 2024,Mezzolombardo,
-IFSC Youth European Cup Dornbirn 2024,Dornbirn,
-IFSC Youth European Cup Žilina 2024,Žilina,
-IFSC Youth European Cup Ostermundigen 2024,Ostermundigen,
-IFSC Youth European Championships Troyes 2024,Troyes,
+IFSC Youth Asian Championships Jamshedpur 2024,,
+IFSC Youth European Cup Lublin 2024,,
+IFSC Youth European Cup Curno 2024,,
+IFSC Youth European Cup Soure 2024,,
+IFSC Youth European Cup Graz 2024,,
+IFSC Youth European Cup Mezzolombardo 2024,,
+IFSC Youth European Cup Dornbirn 2024,,
+IFSC Youth European Cup Žilina 2024,,
+IFSC Youth European Cup Ostermundigen 2024,,
+IFSC Youth European Championships Troyes 2024,,
 IFSC Europe - Continental Cup (B) - Prague (CZE) 2022,Prague,CZE
 IFSC Europe - Continental Cup (B) - Brixen (ITA) 2022,Brixen,ITA
 IFSC Europe - Continental Cup (B) - Klagenfurt (AUT) 2022,Klagenfurt,AUT
@@ -1166,19 +1166,19 @@ IFSC Europe - Continental Cup (S) - Mezzolombardo (ITA) 2022,Mezzolombardo,ITA
 "IFSC Europe - Continental Championships (B,S,L) - Munich (GER) 2022",Munich,GER
 IFSC Europe - Continental Cup (S) - Hamburg (GER) 2022,Hamburg,GER
 IFSC Europe - Continental Cup (S) - Laval (FRA) 2022,Laval,FRA
-FISU University Championships Koper 2024,Koper,
+FISU University Championships Koper 2024,,
 IFSC Madrid 4 Speed,,
 IFSC Madrid Speed,,
 IFSC Nations Grand Finale Fukuoka 2025,,
 International Speed Master Meishan 2025,,
-The World Games Chengdu 2025,Chengdu,
+The World Games Chengdu 2025,,
 Central American Games,,
 Bolivarian Games [CANCELLED],,
-IFSC Asian Cup Hong Kong 2025,Hong Kong,
-IFSC Asian Cup Almaty 2025,Almaty,
-IFSC Oceania Championships Perth 2024,Perth,
-IFSC Oceania Championships Sydney 2024,Sydney,
-IFSC Oceania Cup Mount Maunganui 2025,Mount Maunganui,
+IFSC Asian Cup Hong Kong 2025,,
+IFSC Asian Cup Almaty 2025,,
+IFSC Oceania Championships Perth 2024,,
+IFSC Oceania Championships Sydney 2024,,
+IFSC Oceania Cup Mount Maunganui 2025,,
 IFSC Climbing Worldcup (B) - Meiringen (SUI) 2018,Meiringen,SUI
 "IFSC Climbing Worldcup (B,S) - Moscow (RUS) 2018",Moscow,RUS
 "IFSC Climbing Worldcup (B,S) - Chongqing (CHN) 2018",Chongqing,CHN
@@ -1195,10 +1195,10 @@ IFSC Climbing World Championships Combined - Innsbruck (AUT) 2018,Innsbruck,AUT
 IFSC Climbing Worldcup (L) - Kranj (SLO) 2018,Kranj,SLO
 "IFSC Climbing Worldcup (L,S) - Wujiang (CHN) 2018",Wujiang,CHN
 "IFSC Climbing Worldcup (L,S) - Xiamen (CHN) 2018",Xiamen,CHN
-IFSC South America Cup Ibarra 2024,Ibarra,
-IFSC Pan American Championships Santiago 2024,Santiago,
-IFSC South America Cup Mar del Plata 2024,Mar del Plata,
-IFSC South America Cup Curitiba 2024,Curitiba,
+IFSC South America Cup Ibarra 2024,,
+IFSC Pan American Championships Santiago 2024,,
+IFSC South America Cup Mar del Plata 2024,,
+IFSC South America Cup Curitiba 2024,,
 IFSC Climbing Worldcup (B) - Meiringen (SUI) 2019,Meiringen,SUI
 "IFSC Climbing Worldcup (B,S) - Moscow (RUS) 2019",Moscow,RUS
 "IFSC Climbing Worldcup (B,S) - Chongqing (CHN) 2019",Chongqing,CHN
@@ -1213,7 +1213,7 @@ IFSC Climbing World Championships Combined - Hachioji (JPN) 2019,Hachioji,JPN
 IFSC Climbing Worldcup (L) - Kranj (SLO) 2019,Kranj,SLO
 "IFSC Climbing Worldcup (L, S) - Xiamen (CHN) 2019",Xiamen,CHN
 IFSC Climbing Worldcup (L) - Inzai (JPN) 2019,Inzai,JPN
-IFSC Youth World Championships Helsinki 2025,Helsinki,
+IFSC Youth World Championships Helsinki 2025,,
 IFSC - Paraclimbing World Cup (L) - Innsbruck (AUT) 2021,Innsbruck,AUT
 IFSC - Paraclimbing World Cup (L) - Briançon (FRA) 2021,Briançon,FRA
 IFSC - Paraclimbing World Championships (L) - Moscow 2021,Moscow,
@@ -1227,11 +1227,11 @@ IFSC Europe - Continental Youth Cup (L) - Dornbirn (AUT) 2022,Dornbirn,AUT
 IFSC Europe - Continental Youth Cup (S) - Mezzolombardo (ITA) 2022,Mezzolombardo,ITA
 IFSC Europe - Continental Youth Championship (B) - Graz (AUT) 2022,Graz,AUT
 "IFSC Europe - Continental Youth Cup (L,S,B) - Kaliningrad (RUS) 2022 - CANCELLED",Kaliningrad,RUS
-IFSC Para Climbing World Cup Salt Lake City 2025,Salt Lake City,
-IFSC Para Climbing World Cup Innsbruck 2025,Innsbruck,
-IFSC Para Climbing World Championships Seoul 2025,Seoul,
-IFSC Para Climbing Master Fukuoka 2025,Fukuoka,
-IFSC Para Climbing World Cup Laval 2025,Laval,
+IFSC Para Climbing World Cup Salt Lake City 2025,,
+IFSC Para Climbing World Cup Innsbruck 2025,,
+IFSC Para Climbing World Championships Seoul 2025,,
+IFSC Para Climbing Master Fukuoka 2025,,
+IFSC Para Climbing World Cup Laval 2025,,
 IFSC - Climbing World Cup (B) - Meiringen (SUI) 2022,Meiringen,SUI
 "IFSC - Climbing World Cup (B,S) - Seoul (KOR) 2022",Seoul,KOR
 "IFSC - Climbing World Cup (B,S) - Salt Lake City (USA) 2022",Salt Lake City,USA
@@ -1245,19 +1245,19 @@ IFSC - Climbing World Cup (L) - Koper (SLO) 2022,Koper,SLO
 "IFSC - Climbing World Cup (L,S) - Edinburgh (GBR) 2022",Edinburgh,GBR
 "IFSC - Climbing World Cup (L,S) - Jakarta (INA) 2022",Jakarta,INA
 "IFSC - Climbing World Cup (B&L) - Morioka, Iwate (JPN) 2022",Iwate,JPN
-IFSC Youth European Cup Soure 2025,Soure,
-IFSC Youth European Cup Graz 2025,Graz,
-IFSC Youth European Championships Curno 2025,Curno,
-IFSC Youth European Cup Molde 2025,Molde,
-IFSC Youth European Cup Mezzolombardo 2025,Mezzolombardo,
-IFSC Youth European Cup Sukoró 2025,Sukoró,
-IFSC Youth European Cup Zakopane 2025,Zakopane,
-IFSC Youth European Cup Bologna 2025,Bologna,
-IFSC Youth European Cup St. Pölten 2025,St. Pölten,
-IFSC Youth European Championships Žilina 2025,Žilina,
-IFSC Youth European Cup Imst 2025,Imst,
-IFSC Youth European Cup Laval 2025,Laval,
-IFSC Youth European Cup Toulouse-Tournefeuille 2025,Toulouse-Tournefeuille,
+IFSC Youth European Cup Soure 2025,,
+IFSC Youth European Cup Graz 2025,,
+IFSC Youth European Championships Curno 2025,,
+IFSC Youth European Cup Molde 2025,,
+IFSC Youth European Cup Mezzolombardo 2025,,
+IFSC Youth European Cup Sukoró 2025,,
+IFSC Youth European Cup Zakopane 2025,,
+IFSC Youth European Cup Bologna 2025,,
+IFSC Youth European Cup St. Pölten 2025,,
+IFSC Youth European Championships Žilina 2025,,
+IFSC Youth European Cup Imst 2025,,
+IFSC Youth European Cup Laval 2025,,
+IFSC Youth European Cup Toulouse-Tournefeuille 2025,,
 European Youth Cup (B) - Soure (POR) 2019,Soure,POR
 European Youth Cup (B) - Graz (AUT) 2019,Graz,AUT
 European Youth Cup (S) - Mezzolombardo (ITA) 2019,Mezzolombardo,ITA
@@ -1292,57 +1292,57 @@ European Youth Cup (S) - Imst (AUT) 2017,Imst,AUT
 European Youth Championships (B) - Slany (CZE) 2017,Slany,CZE
 "European Youth Championships (L,S) - Perm (RUS) 2017",Perm,RUS
 European Youth Championship Combined (Youth A) - Saint-Etienne (FRA) 2017,Saint-Etienne,FRA
-IFSC Pan American Cup Santiago 2025 [CANCELLED],Santiago,
-IFSC Pan American Cup Armenia 2025,Armenia,
-IFSC Paraclimbing World Cup Salt Lake City 2023,Salt Lake City,
-IFSC Paraclimbing World Cup Innsbruck 2023,Innsbruck,
-IFSC Paraclimbing World Cup Villars 2023,Villars,
-IFSC Paraclimbing World Championships Bern 2023,Bern,
-IFSC European Cup Lublin 2024,Lublin,
-IFSC European Cup Klagenfurt 2024,Klagenfurt,
-IFSC European Cup Mezzolombardo 2024,Mezzolombardo,
-IFSC European Cup Augsburg 2024,Augsburg,
-IFSC European Cup Innsbruck 2024,Innsbruck,
-IFSC European Championships Villars 2024,Villars,
-IFSC European Cup Casalecchio di Reno 2024,Casalecchio di Reno,
-IFSC European Cup Genova 2024,Genova,
-IFSC World Cup Hachioji 2023,Hachioji,
-IFSC World Cup Seoul 2023,Seoul,
-IFSC World Cup Jakarta 2023,Jakarta,
-IFSC World Cup Salt Lake City 2023,Salt Lake City,
-IFSC World Cup Prague 2023,Prague,
-IFSC World Cup Brixen 2023,Brixen,
-IFSC World Cup Innsbruck 2023,Innsbruck,
-IFSC World Cup Villars 2023,Villars,
-IFSC World Cup Chamonix 2023,Chamonix,
-IFSC World Cup Briançon 2023,Briançon,
-IFSC World Championships Bern 2023,Bern,
-IFSC World Cup Koper 2023,Koper,
-IFSC World Cup Wujiang 2023,Wujiang,
-IFSC European Cup Munich 2025,Munich,
-IFSC European Cup Rome 2025,Rome,
-IFSC European Cup Brussels 2025,Brussels,
-IFSC European Cup Mezzolombardo 2025,Mezzolombardo,
-IFSC European Cup Zakopane 2025,Zakopane,
-IFSC European Cup Campitello di Fassa 2025,Campitello di Fassa,
-IFSC European Cup Ostermundigen 2025,Ostermundigen,
-IFSC European Cup Soure 2025 [CANCELLED],Soure,
-IFSC European Cup St. Pölten 2025,St. Pölten,
-IFSC European Cup Hamburg 2025,Hamburg,
-IFSC European Cup Laval 2025,Laval,
-IFSC European Cup Toulouse-Tournefeuille 2025,Toulouse-Tournefeuille,
-IFSC World Cup Keqiao 2025,Keqiao,
-IFSC World Cup Wujiang 2025,Wujiang,
-IFSC World Cup Bali 2025,Bali,
-IFSC World Cup Curitiba 2025,Curitiba,
-IFSC World Cup Salt Lake City 2025,Salt Lake City,
-IFSC World Cup Denver 2025,Denver,
-IFSC World Cup Prague 2025,Prague,
-IFSC World Cup Bern 2025,Bern,
-IFSC World Cup Innsbruck 2025,Innsbruck,
-IFSC World Cup Krakow 2025,Krakow,
-IFSC World Cup Chamonix 2025,Chamonix,
-IFSC World Cup Comunidad de Madrid 2025,Comunidad de Madrid,
-IFSC World Cup Koper 2025,Koper,
-IFSC World Cup Guiyang 2025,Guiyang,
-IFSC World Championships Seoul 2025,Seoul,
+IFSC Pan American Cup Santiago 2025 [CANCELLED],,
+IFSC Pan American Cup Armenia 2025,,
+IFSC Paraclimbing World Cup Salt Lake City 2023,,
+IFSC Paraclimbing World Cup Innsbruck 2023,,
+IFSC Paraclimbing World Cup Villars 2023,,
+IFSC Paraclimbing World Championships Bern 2023,,
+IFSC European Cup Lublin 2024,,
+IFSC European Cup Klagenfurt 2024,,
+IFSC European Cup Mezzolombardo 2024,,
+IFSC European Cup Augsburg 2024,,
+IFSC European Cup Innsbruck 2024,,
+IFSC European Championships Villars 2024,,
+IFSC European Cup Casalecchio di Reno 2024,,
+IFSC European Cup Genova 2024,,
+IFSC World Cup Hachioji 2023,,
+IFSC World Cup Seoul 2023,,
+IFSC World Cup Jakarta 2023,,
+IFSC World Cup Salt Lake City 2023,,
+IFSC World Cup Prague 2023,,
+IFSC World Cup Brixen 2023,,
+IFSC World Cup Innsbruck 2023,,
+IFSC World Cup Villars 2023,,
+IFSC World Cup Chamonix 2023,,
+IFSC World Cup Briançon 2023,,
+IFSC World Championships Bern 2023,,
+IFSC World Cup Koper 2023,,
+IFSC World Cup Wujiang 2023,,
+IFSC European Cup Munich 2025,,
+IFSC European Cup Rome 2025,,
+IFSC European Cup Brussels 2025,,
+IFSC European Cup Mezzolombardo 2025,,
+IFSC European Cup Zakopane 2025,,
+IFSC European Cup Campitello di Fassa 2025,,
+IFSC European Cup Ostermundigen 2025,,
+IFSC European Cup Soure 2025 [CANCELLED],,
+IFSC European Cup St. Pölten 2025,,
+IFSC European Cup Hamburg 2025,,
+IFSC European Cup Laval 2025,,
+IFSC European Cup Toulouse-Tournefeuille 2025,,
+IFSC World Cup Keqiao 2025,,
+IFSC World Cup Wujiang 2025,,
+IFSC World Cup Bali 2025,,
+IFSC World Cup Curitiba 2025,,
+IFSC World Cup Salt Lake City 2025,,
+IFSC World Cup Denver 2025,,
+IFSC World Cup Prague 2025,,
+IFSC World Cup Bern 2025,,
+IFSC World Cup Innsbruck 2025,,
+IFSC World Cup Krakow 2025,,
+IFSC World Cup Chamonix 2025,,
+IFSC World Cup Comunidad de Madrid 2025,,
+IFSC World Cup Koper 2025,,
+IFSC World Cup Guiyang 2025,,
+IFSC World Championships Seoul 2025,,
