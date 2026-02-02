@@ -59,7 +59,39 @@ VENUE_CHUNKS = {
     "century plaza",
 }
 
-US_STATE_NAMES = {"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"}
+US_STATE_NAMES = {
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+    "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+    "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+    "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+    "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
+    "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+    "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+    "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
+}
+
+# Fallback ISO3 list to avoid hard dependency on pycountry.
+FALLBACK_ISO3_CODES = {
+    "ARG", "AUS", "AUT", "AZE", "BEL", "BUL", "CAN", "CHI", "CHN", "CMA",
+    "COL", "CRO", "CYP", "CZE", "ECU", "ESP", "FIN", "FRA", "GBR", "GER",
+    "GRE", "HKG", "HUN", "IDN", "INA", "IND", "IRI", "IRN", "ITA", "JOR",
+    "JPN", "KAZ", "KOR", "LTU", "MAS", "MEX", "MKD", "MYS", "NCL", "NED",
+    "NOR", "NZL", "PER", "PHI", "POL", "POR", "PRK", "QAT", "RSA", "RUS",
+    "SGP", "SIN", "SLO", "SRB", "SUI", "SVK", "SWE", "THA", "TPE", "UKR",
+    "USA", "VEN",
+}
+
+COUNTRY_NAME_OVERRIDES = {
+    "china": "CHN",
+    "france": "FRA",
+    "hong kong": "HKG",
+    "indonesia": "IDN",
+    "iran": "IRN",
+    "malaysia": "MYS",
+    "new caledonia": "NCL",
+    "peru": "PER",
+    "republic of korea": "PRK",
+}
 
 
 # Event keywords (used to cut "World Cup ... <City>" => "<City>")
@@ -98,11 +130,12 @@ END_KEYWORD_RE = re.compile(
 )
 
 STOPWORDS = {"of", "de", "del", "di", "da", "la", "le", "du", "des", "the", "a", "an"}
-KEYWORDS_WORDS = set()
-for kw in EVENT_KEYWORDS + ["ifsc", "uiaa", "x-games", "x", "games", "espn", "intl", "int"]:
-    for w in re.split(r"\s+|-", kw.lower()):
-        if w:
-            KEYWORDS_WORDS.add(w)
+KEYWORDS_WORDS = {
+    w
+    for kw in EVENT_KEYWORDS + ["ifsc", "uiaa", "x-games", "x", "games", "espn", "intl", "int"]
+    for w in re.split(r"\s+|-", kw.lower())
+    if w
+}
 
 # Reject if these appear anywhere in the extracted city string
 BLACKLIST_CITY_SUBSTR = ["melloblocco", "the north face", "north face"]
@@ -133,6 +166,10 @@ def country_name_to_iso3_safe(name: str) -> Optional[str]:
     if s.upper() == "USA":
         return "USA"
 
+    override = COUNTRY_NAME_OVERRIDES.get(s.strip().lower())
+    if override:
+        return override
+
     # Strict-ish lookup first
     iso3 = _pycountry_lookup_safe(s)
     if iso3:
@@ -155,6 +192,12 @@ def country_name_to_iso3_safe(name: str) -> Optional[str]:
     return None
 
 
+def _is_known_iso3(code: str) -> bool:
+    if pycountry is not None:
+        return pycountry.countries.get(alpha_3=code) is not None
+    return code in FALLBACK_ISO3_CODES
+
+
 def looks_like_country_token(token: str) -> Optional[str]:
     """Return ISO3 if 'token' is clearly a country code/name; else None."""
     t = token.strip().strip(",;")
@@ -162,9 +205,7 @@ def looks_like_country_token(token: str) -> Optional[str]:
         return None
 
     if re.fullmatch(r"[A-Z]{3}", t):
-        if pycountry is not None and pycountry.countries.get(alpha_3=t) is not None:
-            return t
-        return None
+        return t if _is_known_iso3(t) else None
 
     return country_name_to_iso3_safe(t)
 
@@ -354,9 +395,11 @@ def clean_city(city_raw: str) -> Optional[str]:
     # Strip edge noise words
     words = c.split()
     noise_edge = {
-        "ifsc","uiaa","climbing","world","cup","worldcup","championship","championships","series",
-        "open","masters","festival","event","international","internationals","competition","competitions",
-        "youth","junior","senior","days","trophy","x-games","xgames","espn","rockstars","rockstar","int","intl"
+        "ifsc", "uiaa", "climbing", "world", "cup", "worldcup", "championship",
+        "championships", "series", "open", "masters", "festival", "event",
+        "international", "internationals", "competition", "competitions",
+        "youth", "junior", "senior", "days", "trophy", "x-games", "xgames",
+        "espn", "rockstars", "rockstar", "int", "intl",
     }
     changed = True
     while changed and words:
@@ -392,10 +435,47 @@ def clean_city(city_raw: str) -> Optional[str]:
     if not any(ch.isalpha() for ch in c):
         return None
     # If it's exactly an ISO3 country code, it's not a city
-    if re.fullmatch(r"[A-Z]{3}", c) and pycountry is not None and pycountry.countries.get(alpha_3=c) is not None:
+    if re.fullmatch(r"[A-Z]{3}", c) and _is_known_iso3(c):
         return None
 
     return c
+
+
+def _last_match(pattern: re.Pattern[str], text: str) -> Optional[re.Match[str]]:
+    last = None
+    for match in pattern.finditer(text):
+        last = match
+    return last
+
+
+def _city_from_left_segment(left: str) -> str:
+    matches = list(SEP_RE.finditer(left))
+    city_raw = ""
+    for i in range(len(matches) - 1, -1, -1):
+        m = matches[i]
+        chunk = left[m.end():].strip().strip(" ,;:-")
+        if not chunk:
+            continue
+
+        if chunk.lower() in VENUE_CHUNKS and i - 1 >= 0:
+            seg_start = matches[i - 1].end()
+            seg_end = m.start()
+            prev = left[seg_start:seg_end].strip().strip(" ,;:-")
+            if prev:
+                return prev
+            continue
+
+        if re.fullmatch(r"[A-Z]{2,3}", chunk) and chunk in REGION_ABBREV and i - 1 >= 0:
+            seg_start = matches[i - 1].end()
+            seg_end = m.start()
+            prev = left[seg_start:seg_end].strip().strip(" ,;:-")
+            if prev:
+                return prev
+            continue
+
+        return chunk
+
+    return city_raw
 
 
 # --- Public API -----------------------------------------------------------
@@ -411,28 +491,22 @@ def parse_city_country(event_name: str) -> Tuple[Optional[str], Optional[str]]:
     anchor = None
     country = None
 
-    m_iso = None
-    for m_iso in COUNTRY_ISO3_PAREN_RE.finditer(s):
-        pass
+    m_iso = _last_match(COUNTRY_ISO3_PAREN_RE, s)
     if m_iso:
         country = m_iso.group(1)
         anchor = (m_iso.start(), m_iso.end())
     else:
-        m_iso2 = None
-        for m_iso2 in COUNTRY_ISO3_RPAREN_RE.finditer(s):
-            pass
+        m_iso2 = _last_match(COUNTRY_ISO3_RPAREN_RE, s)
         if m_iso2:
             iso = m_iso2.group(1)
-            # Only accept if it's a real ISO3 country code (requires pycountry)
-            if pycountry is not None and pycountry.countries.get(alpha_3=iso) is not None:
+            # Only accept if it's a real ISO3 country code.
+            if _is_known_iso3(iso):
                 country = iso
                 anchor = (m_iso2.start(), m_iso2.end())
 
     # 2) Country name in parentheses "(France)"
     if anchor is None:
-        m_name = None
-        for m_name in PAREN_CONTENT_RE.finditer(s):
-            pass
+        m_name = _last_match(PAREN_CONTENT_RE, s)
         if m_name:
             iso3 = country_name_to_iso3_safe(m_name.group(1))
             if iso3:
@@ -442,45 +516,10 @@ def parse_city_country(event_name: str) -> Tuple[Optional[str], Optional[str]]:
     # City extraction (country anchor case)
     if anchor is not None:
         left = DISCIPLINE_BLOCK_RE.sub("", s[:anchor[0]].rstrip())
-        matches = list(SEP_RE.finditer(left))
-        city_raw = ""
-
-        # Walk separators from the end, but avoid selecting a trailing region token like "NSW".
-        for i in range(len(matches) - 1, -1, -1):
-            m = matches[i]
-            chunk = left[m.end():].strip().strip(" ,;:-")
-            if not chunk:
-                continue
-
-            # If the chunk is a known venue/facility (not a city), prefer the previous segment.
-            # Example: "Shanghai, Century Plaza (CHN)" -> "Shanghai"
-            if chunk.lower() in VENUE_CHUNKS and i - 1 >= 0:
-                seg_start = matches[i - 1].end()
-                seg_end = m.start()
-                prev = left[seg_start:seg_end].strip().strip(" ,;:-")
-                if prev:
-                    city_raw = prev
-                    break
-                continue
-
-            # If the last chunk is a known region abbreviation (e.g. NSW), keep the previous segment as the city.
-            if re.fullmatch(r"[A-Z]{2,3}", chunk) and chunk in REGION_ABBREV and i - 1 >= 0:
-                seg_start = matches[i - 1].end()
-                seg_end = m.start()
-                prev = left[seg_start:seg_end].strip().strip(" ,;:-")
-                if prev:
-                    city_raw = prev
-                    break
-                continue
-
-            city_raw = chunk
-            break
-
+        city_raw = _city_from_left_segment(left)
         return finalize_city(city_raw, country, s), country
 # 3) No country. Use last year as an anchor, and try patterns like "... <City>, USA 1997"
-    m_year = None
-    for m_year in YEAR_RE.finditer(s):
-        pass
+    m_year = _last_match(YEAR_RE, s)
     if m_year:
         left = DISCIPLINE_BLOCK_RE.sub("", s[:m_year.start()].rstrip())
         matches = list(SEP_RE.finditer(left))
