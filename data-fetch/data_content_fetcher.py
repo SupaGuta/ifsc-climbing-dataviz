@@ -237,9 +237,9 @@ if DATA_TO_FETCH["events"]:
         UNIQUE (event_id, discipline_id, category_id)
     );
     ''')
-            
-    db_content_cur.execute('''UPDATE Events 
-                            SET city=?, country=?''', (None, None))
+
+    # For testing purpose only     
+    # db_content_cur.execute('''UPDATE Events SET city=?, country=?''', (None, None))
     
     # Start scraping data from API
     print("Started scraping events...")
@@ -251,6 +251,10 @@ if DATA_TO_FETCH["events"]:
     events_count = 0
     competitions_count = 0
     errors_count = 0
+
+    # Store cities with no country and city / country dict
+    event_cities = {} # id / city
+    event_city_country = {} # city / country
     
     for data in data_list:
         try:
@@ -264,14 +268,19 @@ if DATA_TO_FETCH["events"]:
             # Parse event data
             event_name = data.get("name", None)
             event_city, event_country = event_location_v2.parse_city_country(event_name)
-            '''
             if not event_city:
                 event_city = data.get("location", None)
                 if event_city:
                     event_city = event_city.strip().split(",")[0]
             if not event_country:
                 event_country = data.get("country", None)
-            '''
+
+            # Store city / country data for further update
+            if event_city and not event_country:
+                event_cities[event_id] = event_city
+            if event_city and event_country:
+                event_city_country[event_city] = event_country
+
             event_date_start = data.get("local_start_date", None)
             event_date_end = data.get("local_end_date", None)
             event_is_paraclimbing = data.get("is_paraclimbing_event", None)
@@ -314,7 +323,15 @@ if DATA_TO_FETCH["events"]:
             logging.error(f"Error parsing data from '/events/{event_ifsc_id}': {e}")
             errors_count = errors_count + 1
             continue
-
+    
+    # Search country for cities with no country and update in db
+    for event_id, event_city in event_cities.items():
+        event_country = event_city_country.get(event_city, None)
+        if event_country:
+            db_content_cur.execute('''UPDATE Events SET country=? WHERE id=?''', (event_country, event_id))
+    
+    # Commit all info to database
+    db_content_conn.commit()
 
     # Output
     print(f"Scraped {events_count} events and {competitions_count} competitions ({errors_count} errors).")
