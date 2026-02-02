@@ -12,7 +12,7 @@ import re
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 from assets.helpers import data_fetcher
-from assets.helpers import event_location_v2
+from assets.helpers import event_location
 
 
 # General config
@@ -267,7 +267,7 @@ if DATA_TO_FETCH["events"]:
 
             # Parse event data
             event_name = data.get("name", None)
-            event_city, event_country = event_location_v2.parse_city_country(event_name)
+            event_city, event_country = event_location.parse_city_country(event_name)
             if not event_city:
                 event_city = data.get("location", None)
                 if event_city:
