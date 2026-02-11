@@ -8,6 +8,7 @@ import sys
 import sqlite3
 import logging
 import re
+from itertools import groupby
 # Import helpers
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
@@ -234,7 +235,7 @@ if DATA_TO_FETCH["events"]:
         discipline_id INTEGER,
         category_id INTEGER,
         ifsc_id INTEGER,
-        UNIQUE (event_id, discipline_id, category_id)
+        UNIQUE (event_id, ifsc_id)
     );
     ''')
 
@@ -303,7 +304,8 @@ if DATA_TO_FETCH["events"]:
                 category_name = comp.get("category_name", None)
                 # Hack for IFSC cat error in event 1462
                 if category_name == "AL1":
-                    category_name = "Men AL1"   
+                    category_name = "Men AL1"  
+
                 row = db_content_cur.execute('SELECT id FROM Categories WHERE name = ? ', (category_name, ))
                 category_id = db_content_cur.fetchone()[0]
 
@@ -335,6 +337,103 @@ if DATA_TO_FETCH["events"]:
 
     # Output
     print(f"Scraped {events_count} events and {competitions_count} competitions ({errors_count} errors).")
+
+
+# Gather data from results endpoint
+# API : /events/id/results/id
+# Fill tables: Results, Athletes (IDs only)
+
+if DATA_TO_FETCH["results"]:
+
+    # Drop and create new tables
+    db_content_cur.executescript('''
+    DROP TABLE IF EXISTS Results;
+    DROP TABLE IF EXISTS Athletes;
+                        
+    CREATE TABLE IF NOT EXISTS Results (
+        id INTEGER PRIMARY KEY,
+        competition_id INTEGER,
+        athlete_id INTEGER,
+        rank INTEGER,
+        UNIQUE (competition_id, athlete_id)
+    );
+                        
+    CREATE TABLE IF NOT EXISTS Athletes (
+        id INTEGER PRIMARY KEY,
+        ifsc_id INTEGER UNIQUE,
+        firstname TEXT,
+        lastname TEXT,
+        gender INTEGER,
+        height INTEGER,
+        arm_span INTEGER,
+        birthday DATE,
+        city TEXT,
+        country TEXT,
+        photo_url TEXT,
+        is_paraclimbing BOOLEAN
+    );
+    ''')
+
+    # Parse data and save to database
+    events_count = 0
+    competitions_count = 0
+    competitions_total = 0
+    athletes_count = 0
+    errors_count = 0    
+
+    # Start scraping data from API
+    # Retrieve valid everesultsnts' event_ids and ifsc_ids from struct database then start scraping
+    comps_ifsc_ids = [row for row in db_struct_cur.execute("SELECT Events.ifsc_id, Results.ifsc_id FROM Results JOIN Events " \
+    "ON Results.event_id = Events.id ORDER BY Events.ifsc_id ASC")]
+    for event_ifsc_id, group in groupby(comps_ifsc_ids, key=lambda r: r[0]):
+        results_ifsc_ids = [ifsc_id for _, ifsc_id in group]
+        competitions_total += len(results_ifsc_ids)
+        events_count += 1
+        
+        print("Started scraping results for event", event_ifsc_id, "...")
+        data_list, failed_ids = data_fetcher.scrape_parallel("events/"+str(event_ifsc_id)+"/result", results_ifsc_ids)
+  
+        for data in data_list:
+            try:
+                # Get current results id from IFSC 
+                results_ifsc_id = data.get("ifsc_id", None)
+
+                # Get current competition in content table
+                comp_id = db_content_cur.execute('SELECT Competitions.id FROM Competitions JOIN Events ' \
+                'ON Competitions.event_id = Events.id ' \
+                'WHERE Events.ifsc_id = ? AND Competitions.ifsc_id = ? ', (event_ifsc_id, results_ifsc_id)).fetchone()[0]
+
+                # Parse reults data
+                ranking = data.get("ranking", None)
+                for athlete in ranking:
+                    athlete_ifsc_id = athlete.get("athlete_id", None)
+                    athlete_rank = athlete.get("rank", None)
+
+                    # Add athlete and retrieve athlete id
+                    db_content_cur.execute("INSERT OR IGNORE INTO Athletes (ifsc_id) VALUES ( ? )", (athlete_ifsc_id, )) 
+                    if db_content_cur.rowcount == 1: 
+                        athletes_count = athletes_count + 1  
+                    athlete_id = db_content_cur.execute('SELECT id FROM Athletes WHERE ifsc_id = ?', (athlete_ifsc_id, )) .fetchone()[0]
+
+                    # Add result
+                    db_content_cur.execute("INSERT OR IGNORE INTO Results (competition_id, athlete_id, rank) " \
+                    "VALUES ( ?, ?, ? )", (comp_id, athlete_id, athlete_rank)) 
+    
+                competitions_count = competitions_count + 1
+                
+                # Commit all info to database
+                db_content_conn.commit()
+
+            except Exception as e:
+                logging.error(f"Error parsing data from '/events/{event_ifsc_id}/result/{results_ifsc_id}': {e}")
+                errors_count = errors_count + 1
+                continue
+        
+        # Commit all info to database
+        db_content_conn.commit() 
+        
+    # Output
+    print(f"Scraped {events_count} events, {competitions_count}/{competitions_total} competitions and {athletes_count} athletes ({errors_count} errors).")
 
 
 # Close database handles
